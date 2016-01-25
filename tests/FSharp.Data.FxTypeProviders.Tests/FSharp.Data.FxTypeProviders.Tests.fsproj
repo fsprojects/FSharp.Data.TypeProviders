@@ -79,7 +79,7 @@
     <Compile Include="WsdlService\WsdlServiceTests.fs">
       <Link>WsdlServiceTests.fs</Link>
     </Compile>
-    <Content Include="test.exe.config" />
+    <Content Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
