@@ -20,10 +20,34 @@ Documentation
   <div class="span1"></div>
 </div>
 
-Example
+
+This component contains the F# Type Providers for SqlDataConnection, SqlEntityConnection, ODataService, 
+WsdlService and EdmxFile using .NET Framework generators.
+
+
+
+* [DbmlFile Type Provider](dbml.html) - Provides the types for a database schema encoded in a .dbml file.
+
+* [EdmxFile Type Provider](edmx.html) - Provides the types to access a database with the schema in an .edmx file, using a LINQ to Entities mapping.
+
+* [ODataService Type Provider](odata.html) - Provides the types to access an OData service.
+
+* [SqlDataConnection Type Provider](sqldata.html) - Provides the types to access a SQL database.
+
+* [SqlEntityConnection_ Type Provider](sqlentity.html) - Provides the types to access a database, using a LINQ to Entities mapping.
+
+* [WsdlService Type Provider](wsdl.html) - Provides the types for a Web Services Description Language (WSDL) web service.
+
+History
 -------
 
-This example demonstrates using a function defined in this sample library.
+This component is shipped in the Visual F# Tools at version 4.3.0.0.  The proposal is that
+subsequent versions and development will happen as an F# community component.
+
+Referencing the library
+-------
+
+Reference the library as shown below.
 
 *)
 #r "FSharp.Data.TypeProviders.dll"
@@ -33,16 +57,9 @@ open FSharp.Data.TypeProviders
 
 
 (**
-Some more info
 
 Samples & documentation
 -----------------------
-
-The library comes with comprehensible documentation. 
-It can include tutorials automatically generated from `*.fsx` files in [the content folder][content]. 
-The API reference is automatically generated from Markdown comments in the library implementation.
-
- * [Tutorial](tutorial.html) contains a further explanation of this sample library.
 
  * [API Reference](reference/index.html) contains automatically generated documentation for all types, modules
    and functions in the library. This includes additional brief samples on using most of the
@@ -56,7 +73,7 @@ the project and submit pull requests. If you're adding a new public API, please 
 consider adding [samples][content] that can be turned into a documentation. You might
 also want to read the [library design notes][readme] to understand how it works.
 
-The library is available under Public Domain license, which allows modification and 
+The library is available under the Apache 2.0 license, which allows modification and 
 redistribution for both commercial and non-commercial purposes. For more information see the 
 [License file][license] in the GitHub repository. 
 
