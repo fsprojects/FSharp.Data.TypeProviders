@@ -1,0 +1,23 @@
+type project
+owners
+    Don Syme, Microsoft Corporation
+authors 
+    Don Syme, Microsoft Corporation
+projectUrl
+    http://github.com/fsprojects/FSharp.Data.FxTypeProviders
+iconUrl
+    https://raw.githubusercontent.com/fsprojects/FSharp.Data.FxTypeProviders/master/docs/files/img/logo.png
+licenseUrl
+    http://github.com/fsprojects/FSharp.Data.FxTypeProviders/blob/master/LICENSE.txt
+requireLicenseAcceptance
+    false
+copyright
+    Copyright 2015
+tags
+    FSharp OData SQL LINQ WSDL
+summary
+    F# Type Providers using .NET Framework generators, was FSharp.Data.TypeProviders.dll
+description
+    F# Type Providers using .NET Framework generators, for Linq-to-SQL, Linq-to-Entities, OData and WSDL
+
+

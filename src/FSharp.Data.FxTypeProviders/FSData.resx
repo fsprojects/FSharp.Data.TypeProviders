@@ -1,0 +1,342 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+        Microsoft ResX Schema 
+        
+        Version 2.0
+        
+        The primary goals of this format is to allow a simple XML format 
+        that is mostly human readable. The generation and parsing of the 
+        various data types are done through the TypeConverter classes 
+        associated with the data types.
+        
+        Example:
+        
+        ... ado.net/XML headers & schema ...
+        <resheader name="resmimetype">text/microsoft-resx</resheader>
+        <resheader name="version">2.0</resheader>
+        <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+        <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+        <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+        <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+        <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+            <value>[base64 mime encoded serialized .NET Framework object]</value>
+        </data>
+        <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+            <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+            <comment>This is a comment</comment>
+        </data>
+                    
+        There are any number of "resheader" rows that contain simple 
+        name/value pairs.
+        
+        Each data row contains a name, and value. The row also contains a 
+        type or mimetype. Type corresponds to a .NET class that support 
+        text/value conversion through the TypeConverter architecture. 
+        Classes that don't support this are serialized and stored with the 
+        mimetype set.
+        
+        The mimetype is used for serialized objects, and tells the 
+        ResXResourceReader how to depersist the object. This is currently not 
+        extensible. For a given mimetype the value must be set accordingly:
+        
+        Note - application/x-microsoft.net.object.binary.base64 is the format 
+        that the ResXResourceWriter will generate, however the reader can 
+        read any of the formats listed below.
+        
+        mimetype: application/x-microsoft.net.object.binary.base64
+        value   : The object must be serialized with 
+                : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+                : and then encoded with base64 encoding.
+        
+        mimetype: application/x-microsoft.net.object.soap.base64
+        value   : The object must be serialized with 
+                : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+                : and then encoded with base64 encoding.
+
+        mimetype: application/x-microsoft.net.object.bytearray.base64
+        value   : The object must be serialized into a byte array 
+                : using a System.ComponentModel.TypeConverter
+                : and then encoded with base64 encoding.
+        -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="unsupportedFramework" xml:space="preserve">
+    <value>The .NET SDK 4.0 or 4.5 tools could not be found</value>
+  </data>
+  <data name="invalidOperationOnProvidedType" xml:space="preserve">
+    <value>The operation '{0}' on item '{1}' should not be called on provided type, member or parameter</value>
+  </data>
+  <data name="constructorFor" xml:space="preserve">
+    <value>constructor for {0}</value>
+  </data>
+  <data name="notYetKnownType" xml:space="preserve">
+    <value>&lt;not yet known type&gt;</value>
+  </data>
+  <data name="declaringTypeAlreadySet" xml:space="preserve">
+    <value>ProvidedConstructor: declaringType already set on '{0}'</value>
+  </data>
+  <data name="pcNoInvoker" xml:space="preserve">
+    <value>ProvidedConstructor: no invoker for '{0}'</value>
+  </data>
+  <data name="pcCodeAlreadyGiven" xml:space="preserve">
+    <value>ProvidedConstructor: code already given for '{0}'</value>
+  </data>
+  <data name="pmNoInvokerName" xml:space="preserve">
+    <value>ProvidedMethod: no invoker for {0} on type {1}</value>
+  </data>
+  <data name="pcNoInvokerName" xml:space="preserve">
+    <value>ProvidedConstructor: code already given for {0} on type {1}</value>
+  </data>
+  <data name="ppGetterAlreadyCreated" xml:space="preserve">
+    <value>ProvidedProperty: getter MethodInfo has already been created</value>
+  </data>
+  <data name="ppSetterAlreadyCreated" xml:space="preserve">
+    <value>ProvidedProperty: setter MethodInfo has already been created</value>
+  </data>
+  <data name="unreachable" xml:space="preserve">
+    <value>unreachable</value>
+  </data>
+  <data name="nonArrayType" xml:space="preserve">
+    <value>non-array type</value>
+  </data>
+  <data name="nonGenericType" xml:space="preserve">
+    <value>non-generic type</value>
+  </data>
+  <data name="notAnArrayPointerOrByref" xml:space="preserve">
+    <value>not an array, pointer or byref type</value>
+  </data>
+  <data name="unitNotFound" xml:space="preserve">
+    <value>Unit '{0}' not found in FSharp.Core SI module</value>
+  </data>
+  <data name="useNullForGlobalNamespace" xml:space="preserve">
+    <value>Use 'null' for global namespace</value>
+  </data>
+  <data name="typeNotAddedAsAMember" xml:space="preserve">
+    <value>type '{0}' was not added as a member to a declaring type</value>
+  </data>
+  <data name="pdErrorExpectingStaticParameters" xml:space="preserve">
+    <value>ProvidedTypeDefinition: expecting {0} static parameters but given {1} for type {2}</value>
+  </data>
+  <data name="pdDefineStaticParametersNotCalled" xml:space="preserve">
+    <value>ProvidedTypeDefinition: DefineStaticParameters was not called</value>
+  </data>
+  <data name="ptdStaticParametersSuppliedButNotExpected" xml:space="preserve">
+    <value>ProvidedTypeDefinition: static parameters supplied but not expected for {0}</value>
+  </data>
+  <data name="containerTypeAlreadySet" xml:space="preserve">
+    <value>container type for '{0}' was already set to '{1}'</value>
+  </data>
+  <data name="getMethodImplDoesNotSupportOverloads" xml:space="preserve">
+    <value>GetMethodImpl does not support overloads</value>
+  </data>
+  <data name="gpiNeedToHandleSpecifiedReturnType" xml:space="preserve">
+    <value>Need to handle specified return type in GetPropertyImpl</value>
+  </data>
+  <data name="gpiNeedToHandleSpecifiedParameterTypes" xml:space="preserve">
+    <value>Need to handle specified parameter types in GetPropertyImpl</value>
+  </data>
+  <data name="gpiNeedToHandleSpecifiedModifiers" xml:space="preserve">
+    <value>Need to handle specified modifiers in GetPropertyImpl</value>
+  </data>
+  <data name="gpiNeedToHandleBinder" xml:space="preserve">
+    <value>Need to handle binder in GetPropertyImpl</value>
+  </data>
+  <data name="moreThanOneNestedType" xml:space="preserve">
+    <value>There is more than one nested type called '{0}' in type '{1}'</value>
+  </data>
+  <data name="errorWritingLocalSchemaFile" xml:space="preserve">
+    <value>Error writing to local schema file. {0}</value>
+  </data>
+  <data name="errorReadingSchema" xml:space="preserve">
+    <value>Error reading schema. {0}</value>
+  </data>
+  <data name="errorInvalidExtensionSchema" xml:space="preserve">
+    <value>The extension of the given LocalSchema file '{0}' is not valid. The required extension is '{1}'.</value>
+  </data>
+  <data name="fileDoesNotContainXMLElement" xml:space="preserve">
+    <value>The file '{0}' doesn't contain XML element '{1}'</value>
+  </data>
+  <data name="failedToLoadFileAsXML" xml:space="preserve">
+    <value>Failed to load the file '{0}' as XML</value>
+  </data>
+  <data name="xmlDocContainsTheSimplifiedContextTypes" xml:space="preserve">
+    <value>Contains the simplified context types for the {0}</value>
+  </data>
+  <data name="xmlDocFullServiceTypesAPI" xml:space="preserve">
+    <value>&lt;summary&gt;&lt;para&gt;The full API to the {0}.&lt;/para&gt;&lt;para&gt;To use the service via the full API, create an instance of one of the types {1}.&lt;/para&gt;&lt;para&gt;You may need to set the Credentials property on the instance.&lt;/para&gt;&lt;/summary&gt;</value>
+  </data>
+  <data name="xmlDocFullServiceTypesAPINoCredentials" xml:space="preserve">
+    <value>&lt;summary&gt;&lt;para&gt;The full API to the {0}.&lt;/para&gt;&lt;para&gt;To use the service via the full API, create an instance of one of the types {1}.&lt;/para&gt;&lt;/summary&gt;</value>
+  </data>
+  <data name="xmlDocSimplifiedDataContext" xml:space="preserve">
+    <value>A simplified data context for the {0}. The full data context object is available via the DataContext property.</value>
+  </data>
+  <data name="xmlDocExecuteProcedure" xml:space="preserve">
+    <value>Execute the '{0}' procedure</value>
+  </data>
+  <data name="xmlDocGetEntities" xml:space="preserve">
+    <value>Gets the '{0}' entities from the {1}. This property may be used as the source in a query expression.</value>
+  </data>
+  <data name="xmlDocGetFullContext" xml:space="preserve">
+    <value>Gets the full data context object for this {0}</value>
+  </data>
+  <data name="xmlDocGetSimplifiedContext" xml:space="preserve">
+    <value>Get a simplified data context for this {0}. By default, no credentials are set</value>
+  </data>
+  <data name="xmlDocConstructSimplifiedContext" xml:space="preserve">
+    <value>Construct a simplified data context for this {0}. By default, no credentials are set</value>
+  </data>
+  <data name="dbmlFileTypeHelp" xml:space="preserve">
+    <value>&lt;summary&gt;Provides the types to access a database with the schema in a DBML file, using a LINQ-to-SQL mapping&lt;/summary&gt;&lt;param name='File'&gt;The DBML file containing the schema description&lt;/param&gt;&lt;param name='ResolutionFolder'&gt;The folder used to resolve relative file paths at compile-time (default: folder containing the project or script)&lt;/param&gt;&lt;param name='ContextTypeName'&gt;The name of data context class (default: derived from database name)&lt;/param&gt;&lt;param name='Serializable'&gt;Generate uni-directional serializable classes (default: false, which means no serialization)&lt;/param&gt;</value>
+  </data>
+  <data name="sqlDataConnection" xml:space="preserve">
+    <value>SQL connection</value>
+  </data>
+  <data name="sqlDataConnectionInfo" xml:space="preserve">
+    <value>Gets the connection used by the framework</value>
+  </data>
+  <data name="sqlDataConnectionTypeHelp" xml:space="preserve">
+    <value>&lt;summary&gt;Provides the types to access a database, using a LINQ-to-SQL mapping&lt;/summary&gt;&lt;param name='ConnectionString'&gt;The connection string for the database connection. If using Visual Studio, a connection string can be found in database properties in the Server Explorer window.&lt;/param&gt;&lt;param name='ConnectionStringName'&gt;The name of the connection string for the database connection in the configuration file.&lt;/param&gt;&lt;param name='LocalSchemaFile'&gt;The local .dbml file for the database schema (default: no local schema file)&lt;/param&gt;&lt;param name='ForceUpdate'&gt;Require that a direct connection to the database be available at design-time and force the refresh of the local schema file (default: true)&lt;/param&gt;&lt;param name='Pluralize'&gt;Automatically pluralize or singularize class and member names using English language rules (default: false)&lt;/param&gt;&lt;param name='Views'&gt;Extract database views (default: true)&lt;/param&gt;&lt;param name='Functions'&gt;Extract database functions (default: true)&lt;/param&gt;&lt;param name='ConfigFile'&gt;The name of the configuration file used for connection strings (default: app.config or web.config is used)&lt;/param&gt;&lt;param name='DataDirectory'&gt;The name of the data directory, used to replace |DataDirectory| in connection strings (default: the project or script directory)&lt;/param&gt;&lt;param name='ResolutionFolder'&gt;The folder used to resolve relative file paths at compile-time (default: folder containing the project or script)&lt;/param&gt;&lt;param name='StoredProcedures'&gt;Extract stored procedures (default: true)&lt;/param&gt;&lt;param name='Timeout'&gt;Timeout value in seconds to use when SqlMetal accesses the database (default: 0, which means infinite)&lt;/param&gt;&lt;param name='ContextTypeName'&gt;The name of data context class (default: derived from database name)&lt;/param&gt;&lt;param name='Serializable'&gt;Generate uni-directional serializable classes (default: false, which means no serialization)&lt;/param&gt;</value>
+  </data>
+  <data name="edmxFileTypeHelp" xml:space="preserve">
+    <value>&lt;summary&gt;Provides the types to access a database with the schema in an EDMX file, using a LINQ-to-Entities mapping&lt;/summary&gt;&lt;param name='File'&gt;The EDMX file containing the conceptual, storage and mapping schema descriptions&lt;/param&gt;&lt;param name='ResolutionFolder'&gt;The folder used to resolve relative file paths at compile-time (default: folder containing the project or script)&lt;/param&gt;</value>
+  </data>
+  <data name="sqlEntityConnection" xml:space="preserve">
+    <value>SQL Entity connection</value>
+  </data>
+  <data name="sqlEntityConnectionTypeHelp" xml:space="preserve">
+    <value>&lt;summary&gt;Provides the types to access a database, using a LINQ-to-Entities mapping&lt;/summary&gt;&lt;param name='ConnectionString'&gt;The connection string for the database connection&lt;/param&gt;&lt;param name='ConnectionStringName'&gt;The name of the connection string for the database connection in the configuration file.&lt;/param&gt;&lt;param name='LocalSchemaFile'&gt;The local file for the database schema&lt;/param&gt;&lt;param name='Provider'&gt;The name of the ADO.NET data provider to be used for ssdl generation (default: System.Data.SqlClient)&lt;/param&gt;&lt;param name='EntityContainer'&gt;The name to use for the EntityContainer in the conceptual model&lt;/param&gt;&lt;param name='ConfigFile'&gt;The name of the configuration file used for connection strings (default: app.config or web.config is used)&lt;/param&gt;&lt;param name='DataDirectory'&gt;The name of the data directory, used to replace |DataDirectory| in connection strings (default: the project or script directory)&lt;/param&gt;&lt;param name='ResolutionFolder'&gt;The folder used to resolve relative file paths at compile-time (default: folder containing the project or script)&lt;/param&gt;&lt;param name='ForceUpdate'&gt;Require that a direct connection to the database be available at design-time and force the refresh of the local schema file (default: true)&lt;/param&gt;&lt;param name='Pluralize'&gt;Automatically pluralize or singularize class and member names using English language rules (default: false)&lt;/param&gt;&lt;param name='SuppressForeignKeyProperties'&gt;Exclude foreign key properties in entity type definitions (default: false)&lt;/param&gt;</value>
+  </data>
+  <data name="connectionInfo" xml:space="preserve">
+    <value>Gets the connection used by the object context</value>
+  </data>
+  <data name="odataServiceCredentialsInfo" xml:space="preserve">
+    <value>Gets or sets the authentication information used by each query for this data context object</value>
+  </data>
+  <data name="odataServiceTypeHelp" xml:space="preserve">
+    <value>&lt;summary&gt;Provides the types to access an OData service&lt;/summary&gt;&lt;param name="ServiceUri"&gt;The Uri for the OData service&lt;/param&gt;&lt;param name='LocalSchemaFile'&gt;The local .csdl file for the service schema&lt;/param&gt;&lt;param name='ForceUpdate'&gt;Require that a direct connection to the service be available at design-time and force the refresh of the local schema file (default: true)&lt;/param&gt;&lt;param name='ResolutionFolder'&gt;The folder used to resolve relative file paths at compile-time (default: folder containing the project or script)&lt;/param&gt;&lt;param name='DataServiceCollection'&gt;Generate collections derived from DataServiceCollection (default: false)&lt;/param&gt;</value>
+  </data>
+  <data name="wsdlServiceTypeHelp" xml:space="preserve">
+    <value>&lt;summary&gt;Provides the types to access a WSDL web service&lt;/summary&gt;&lt;param name='ServiceUri'&gt;The Uri for the WSDL service&lt;/param&gt;&lt;param name='LocalSchemaFile'&gt;The .wsdlschema file to store locally cached service schema&lt;/param&gt;&lt;param name='ForceUpdate'&gt;Require that a direct connection to the service be available at design-time and force the refresh of the local schema file (default: true)&lt;/param&gt;&lt;param name='ResolutionFolder'&gt;The folder used to resolve relative file paths at compile-time (default: folder containing the project or script)&lt;/param&gt;&lt;param name='MessageContract'&gt;Generate Message Contract types (default: false)&lt;/param&gt;&lt;param name='EnableDataBinding'&gt;Implement the System.ComponentModel.INotifyPropertyChanged interface on all DataContract types to enable data binding (default: false)&lt;/param&gt;&lt;param name='Serializable'&gt;Generate classes marked with the Serializable Attribute (default: false)&lt;/param&gt;&lt;param name='Async'&gt;Generate both synchronous and asynchronous method signatures (default: false, which means generate only synchronous method signatures)&lt;/param&gt;&lt;param name='CollectionType'&gt;A fully-qualified or assembly-qualified name of the type to use as a collection data type when code is generated from schemas&lt;/param&gt;</value>
+  </data>
+  <data name="staticParameterNotFoundForType" xml:space="preserve">
+    <value>static parameter '{0}' not found for type '{1}'</value>
+  </data>
+  <data name="unexpectedMethodBase" xml:space="preserve">
+    <value>unexpected MethodBase</value>
+  </data>
+  <data name="xmlDocDisposeSimplifiedContext" xml:space="preserve">
+    <value>Disposes the given context</value>
+  </data>
+  <data name="invalidDataContextClassName" xml:space="preserve">
+    <value>{0} is not valid name for data context class</value>
+  </data>
+  <data name="fixedQueriesNotSupported" xml:space="preserve">
+    <value>The provided ServiceUri is for a data service that supports fixed queries. The OData type provider does not support such services.</value>
+  </data>
+  <data name="dqsServicesNotSupported" xml:space="preserve">
+    <value>Services that implement the Data Quality Services API are not supported.</value>
+  </data>
+  <data name="invalidConnectionString" xml:space="preserve">
+    <value>The supplied connection string should be either a valid provider-specific connection string or a valid connection string accepted by the EntityClient.</value>
+  </data>
+  <data name="nonEquivalentConnectionString" xml:space="preserve">
+    <value>Connection string presented in EntityClient format can differ only in provider-specific part.</value>
+  </data>
+  <data name="noConfigFileFound1" xml:space="preserve">
+    <value>A configuration string name was specified but no configuration file was found. Neither app.config nor web.config found in project or script directory.</value>
+  </data>
+  <data name="noConfigFileFound2" xml:space="preserve">
+    <value>A configuration string name was specified but the configuration file '{0}' was not found</value>
+  </data>
+  <data name="noConnectionStringOrConnectionStringName" xml:space="preserve">
+    <value>When using this provider you must specify either a connection string or a connection string name. To specify a connection string, use {0}&lt;\"...connection string...\"&gt;.</value>
+  </data>
+  <data name="notBothConnectionStringOrConnectionStringName" xml:space="preserve">
+    <value>When using this provider you must specify either a connection string or a connection string name, but not both. To specify a connection string, use SqlDataConnection&lt;\"...connection string...\"&gt;.</value>
+  </data>
+  <data name="invalidProviderInConfigFile" xml:space="preserve">
+    <value>Invalid provider '{0}' in connection string entry '{1}' in config file '{2}'. SqlDataConnection can only be used with provider 'System.Data.SqlClient'.</value>
+  </data>
+  <data name="invalidConnectionStringInConfigFile" xml:space="preserve">
+    <value>Invalid empty connection string '{0}' for the connection string name '{1}' in config file '{2}'</value>
+  </data>
+  <data name="errorWhileReadingConnectionStringInConfigFile" xml:space="preserve">
+    <value>An error occured while reading connection string '{0}' from the config file '{1}': '{2}'</value>
+  </data>
+  <data name="serviceMetadataFileElementIsEmpty" xml:space="preserve">
+    <value>ServiceMetadataFile element cannot be empty</value>
+  </data>
+  <data name="invalidWsdlUri" xml:space="preserve">
+    <value>The parameter 'ServiceUri' cannot be an empty string.</value>
+  </data>
+  <data name="requiredToolNotFound" xml:space="preserve">
+    <value>The required tool '{0}' could not be found.</value>
+  </data>
+  <data name="dataDirectoryNotFound" xml:space="preserve">
+    <value>The data directory '{0}' did not exist.</value>
+  </data>
+  <data name="edmxFileRequiresDotNet45" xml:space="preserve">
+    <value>File '{0}' requires .NET 4.5. To use this file please change project target framework to .NET 4.5.</value>
+  </data>
+  <data name="connectionStringNotFound" xml:space="preserve">
+    <value>Connection string '{0}' not found in configuration file.</value>
+  </data>
+</root>
