@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Open Technologies, Inc.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-namespace FSharp.Data.FxTypeProviders.DesignTime
+namespace FSharp.Data.TypeProviders.DesignTime
 
 #nowarn "57"
 #nowarn "44" // This construct is deprecated. please use List.item
@@ -15,7 +15,7 @@ open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open Internal.Utilities.TypeProvider.Emit
-open FSharp.Data.FxTypeProviders.Utility
+open FSharp.Data.TypeProviders.Utility
 
 // This is how the compiler decides the assembly has a type which extend the compiler.
 [<assembly:TypeProviderAssembly>]
@@ -218,7 +218,7 @@ type public DataProviders(config:TypeProviderConfig) =
             Expr.Call(typeof<System.IO.Path>.GetMethod("Combine",[| typeof<string>; typeof<string> |]), [ baseDirectoryExpr; Expr.Value staticFileName ])
 
     let theAssembly = typeof<DataProviders>.Assembly
-    let namespaceName = "FSharp.Data.FxTypeProviders"
+    let namespaceName = "FSharp.Data.TypeProviders"
 
     // checks if target system runtime contains .net 4.5 specific type
     let isTargetingDotNet45 = lazy config.SystemRuntimeContainsType "System.Collections.Generic.IReadOnlyList`1"

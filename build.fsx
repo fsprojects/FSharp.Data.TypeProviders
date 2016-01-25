@@ -28,7 +28,7 @@ open SourceLink
 
 // The name of the project
 // (used by attributes in AssemblyInfo, name of a NuGet package and directory in 'src')
-let project = "FSharp.Data.FxTypeProviders"
+let project = "FSharp.Data.TypeProviders"
 
 // Short summary of the project
 // (used as description in AssemblyInfo and as a short summary for NuGet package)
@@ -45,7 +45,7 @@ let authors = [ "Don Syme, Microsoft Corporation" ]
 let tags = "FSharp OData SQL LINQ WSDL"
 
 // File system information
-let solutionFile  = "FSharp.Data.FxTypeProviders.sln"
+let solutionFile  = "FSharp.Data.TypeProviders.sln"
 
 // Pattern specifying assemblies to be tested using NUnit
 let testAssemblies = "tests/**/bin/Release/*Tests*.dll"
@@ -56,7 +56,7 @@ let gitOwner = "fsprojects"
 let gitHome = "https://github.com/" + gitOwner
 
 // The name of the project on GitHub
-let gitName = "FSharp.Data.FxTypeProviders"
+let gitName = "FSharp.Data.TypeProviders"
 
 // The url for the raw files hosted
 let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/fsprojects"

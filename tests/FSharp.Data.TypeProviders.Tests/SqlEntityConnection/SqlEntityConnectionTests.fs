@@ -1,6 +1,6 @@
 // #Conformance #TypeProviders #SqlEntityConnection
 #if COMPILED
-module FSharp.Data.FxTypeProviders.Tests.SqlEntityConnectionTests
+module FSharp.Data.TypeProviders.Tests.SqlEntityConnectionTests
 #else
 #r "FSharp.Data.TypeProviders.dll"
 #r "System.Management.dll"
@@ -36,7 +36,7 @@ let isSQLExpressInstalled =
 let checkHostedType (expectedContextTypeName, hostedType: System.Type) = 
         //let hostedType = hostedAppliedType1
         
-        test "ceklc09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.FxTypeProviders.DesignTime.DataProviders>.Assembly)
+        test "ceklc09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly)
         test "ceklc09wlkm1b" (hostedType.Assembly.FullName.StartsWith "tmp")
 
         check "ceklc09wlkm2" hostedType.DeclaringType null
@@ -90,7 +90,7 @@ let (++) a b = Path.Combine(a,b)
 
 let instantiateTypeProviderAndCheckOneHostedType(connectionStringName, configFile, useDataDirectory, dataDirectory, entityContainer: string option, localSchemaFile: string option, useForceUpdate: bool option, typeFullPath: string[], resolutionFolder: string option) = 
         let expectedContextTypeName = match entityContainer with None -> "EntityContainer" | Some s -> s
-        let assemblyFile = typeof<FSharp.Data.FxTypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
+        let assemblyFile = typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
         test "cnlkenkewe" (File.Exists assemblyFile) 
 
         // If/when we care about the "target framework", this mock function will have to be fully implemented
@@ -99,14 +99,14 @@ let instantiateTypeProviderAndCheckOneHostedType(connectionStringName, configFil
             true
 
         let tpConfig = new TypeProviderConfig(systemRuntimeContainsType, ResolutionFolder=__SOURCE_DIRECTORY__, RuntimeAssembly=assemblyFile, ReferencedAssemblies=[| |], TemporaryFolder=Path.GetTempPath(), IsInvalidationSupported=false, IsHostedExecution=true)
-        use typeProvider1 = (new FSharp.Data.FxTypeProviders.DesignTime.DataProviders( tpConfig ) :> ITypeProvider)
+        use typeProvider1 = (new FSharp.Data.TypeProviders.DesignTime.DataProviders( tpConfig ) :> ITypeProvider)
 
         let invalidateEventCount = ref 0
 
         typeProvider1.Invalidate.Add(fun _ -> incr invalidateEventCount)
 
         // Load a type provider instance for the type and restart
-        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.FxTypeProviders")
+        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.TypeProviders")
 
         check "eenewioinw" (set [ for i in hostedNamespace1.GetTypes() -> i.Name ]) (set ["DbmlFile"; "EdmxFile"; "ODataService"; "SqlDataConnection";"SqlEntityConnection";"WsdlService"])
 

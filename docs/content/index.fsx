@@ -4,7 +4,7 @@
 #I "../../bin"
 
 (**
-FSharp.Data.FxTypeProviders
+FSharp.Data.TypeProviders
 ======================
 
 Documentation
@@ -13,8 +13,8 @@ Documentation
   <div class="span1"></div>
   <div class="span6">
     <div class="well well-small" id="nuget">
-      The FSharp.Data.FxTypeProviders library can be <a href="https://nuget.org/packages/FSharp.Data.FxTypeProviders">installed from NuGet</a>:
-      <pre>PM> Install-Package FSharp.Data.FxTypeProviders</pre>
+      The FSharp.Data.TypeProviders library can be <a href="https://nuget.org/packages/FSharp.Data.TypeProviders">installed from NuGet</a>:
+      <pre>PM> Install-Package FSharp.Data.TypeProviders</pre>
     </div>
   </div>
   <div class="span1"></div>
@@ -26,8 +26,8 @@ Example
 This example demonstrates using a function defined in this sample library.
 
 *)
-#r "FSharp.Data.FxTypeProviders.dll"
-open FSharp.Data.FxTypeProviders
+#r "FSharp.Data.TypeProviders.dll"
+open FSharp.Data.TypeProviders
 
 
 
@@ -60,9 +60,9 @@ The library is available under Public Domain license, which allows modification 
 redistribution for both commercial and non-commercial purposes. For more information see the 
 [License file][license] in the GitHub repository. 
 
-  [content]: https://github.com/fsprojects/FSharp.Data.FxTypeProviders/tree/master/docs/content
-  [gh]: https://github.com/fsprojects/FSharp.Data.FxTypeProviders
-  [issues]: https://github.com/fsprojects/FSharp.Data.FxTypeProviders/issues
-  [readme]: https://github.com/fsprojects/FSharp.Data.FxTypeProviders/blob/master/README.md
-  [license]: https://github.com/fsprojects/FSharp.Data.FxTypeProviders/blob/master/LICENSE.txt
+  [content]: https://github.com/fsprojects/FSharp.Data.TypeProviders/tree/master/docs/content
+  [gh]: https://github.com/fsprojects/FSharp.Data.TypeProviders
+  [issues]: https://github.com/fsprojects/FSharp.Data.TypeProviders/issues
+  [readme]: https://github.com/fsprojects/FSharp.Data.TypeProviders/blob/master/README.md
+  [license]: https://github.com/fsprojects/FSharp.Data.TypeProviders/blob/master/LICENSE.txt
 *)

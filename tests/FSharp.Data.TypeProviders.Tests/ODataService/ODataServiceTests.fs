@@ -1,9 +1,9 @@
 // #Conformance #TypeProviders #ODataService
 
 #if COMPILED
-module FSharp.Data.FxTypeProviders.Tests.OdataServiceTests
+module FSharp.Data.TypeProviders.Tests.OdataServiceTests
 #else
-#r "../../bin/FSharp.Data.FxTypeProviders.dll"
+#r "../../bin/FSharp.Data.TypeProviders.dll"
 #endif
 
 open Microsoft.FSharp.Core.CompilerServices
@@ -19,12 +19,12 @@ module Infrastructure =
 
 let checkHostedType (hostedType: System.Type) = 
         //let hostedType = hostedAppliedType1
-        test "ceklc09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.FxTypeProviders.DesignTime.DataProviders>.Assembly)
+        test "ceklc09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly)
         test "ceklc09wlkm1b" (hostedType.Assembly.FullName.StartsWith "tmp")
 
         check "ceklc09wlkm2" hostedType.DeclaringType null
         check "ceklc09wlkm3" hostedType.DeclaringMethod null
-        check "ceklc09wlkm4" hostedType.FullName "FSharp.Data.FxTypeProviders.ODataServiceApplied"
+        check "ceklc09wlkm4" hostedType.FullName "FSharp.Data.TypeProviders.ODataServiceApplied"
         check "ceklc09wlkm5" (hostedType.GetConstructors()) [| |]
         check "ceklc09wlkm6" (hostedType.GetCustomAttributesData().Count) 1
         check "ceklc09wlkm6" (hostedType.GetCustomAttributesData().[0].Constructor.DeclaringType.FullName) typeof<TypeProviderXmlDocAttribute>.FullName
@@ -36,7 +36,7 @@ let checkHostedType (hostedType: System.Type) =
         check "ceklc09wlkm9b" (m1.GetParameters().Length) 0
         check "ceklc09wlkm9b" (m2.GetParameters().Length) 1
         check "ceklc09wlkm9b" (m1.ReturnType.Name) "DemoService"
-        check "ceklc09wlkm9c" (m1.ReturnType.FullName) ("FSharp.Data.FxTypeProviders.ODataServiceApplied+ServiceTypes+SimpleDataContextTypes+DemoService")
+        check "ceklc09wlkm9c" (m1.ReturnType.FullName) ("FSharp.Data.TypeProviders.ODataServiceApplied+ServiceTypes+SimpleDataContextTypes+DemoService")
 
         check "ceklc09wlkm9d"  (m1.ReturnType.GetProperties().Length) 5
         check "ceklc09wlkm9e"  (set [ for p in m1.ReturnType.GetProperties() -> p.Name ]) (set ["Categories"; "Credentials"; "DataContext"; "Products"; "Suppliers"]) 
@@ -69,7 +69,7 @@ let checkHostedType (hostedType: System.Type) =
 let instantiateTypeProviderAndCheckOneHostedType(useLocalSchemaFile: string option, useForceUpdate: bool option, typeFullPath:string[]) = 
         //let useLocalSchemaFile : string option = None
         //let useForceUpdate : bool option = None
-        let assemblyFile = typeof<FSharp.Data.FxTypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
+        let assemblyFile = typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
         test "cnlkenkewe" (File.Exists assemblyFile)
 
         // If/when we care about the "target framework", this mock function will have to be fully implemented
@@ -78,14 +78,14 @@ let instantiateTypeProviderAndCheckOneHostedType(useLocalSchemaFile: string opti
             true
 
         let tpConfig = new TypeProviderConfig(systemRuntimeContainsType, ResolutionFolder=__SOURCE_DIRECTORY__, RuntimeAssembly=assemblyFile, ReferencedAssemblies=[| |], TemporaryFolder=Path.GetTempPath(), IsInvalidationSupported=false, IsHostedExecution=true)
-        use typeProvider1 = (new FSharp.Data.FxTypeProviders.DesignTime.DataProviders( tpConfig ) :> ITypeProvider)
+        use typeProvider1 = (new FSharp.Data.TypeProviders.DesignTime.DataProviders( tpConfig ) :> ITypeProvider)
 
         let invalidateEventCount = ref 0
 
         typeProvider1.Invalidate.Add(fun _ -> incr invalidateEventCount)
 
         // Load a type provider instance for the type and restart
-        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.FxTypeProviders")
+        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.TypeProviders")
 
         check "eenewioinw" (set [ for i in hostedNamespace1.GetTypes() -> i.Name ]) (set ["DbmlFile"; "EdmxFile"; "ODataService"; "SqlDataConnection";"SqlEntityConnection";"WsdlService"])
 

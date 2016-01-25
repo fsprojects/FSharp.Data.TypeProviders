@@ -1,8 +1,8 @@
 // #Conformance #TypeProviders #EdmxFile
 #if COMPILED
-module FSharp.Data.FxTypeProviders.Tests.EdmxFile
+module FSharp.Data.TypeProviders.Tests.EdmxFile
 #else
-#r "../../bin/FSharp.Data.FxTypeProviders.dll"
+#r "../../bin/FSharp.Data.TypeProviders.dll"
 #endif
 
 open Microsoft.FSharp.Core.CompilerServices
@@ -21,7 +21,7 @@ module Infrastructure =
 module CheckEdmxfileTypeProvider = 
 
     let checkHostedType (hostedType: System.Type) = 
-        test "ceklc09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.FxTypeProviders.DesignTime.DataProviders>.Assembly)
+        test "ceklc09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly)
         test "ceklc09wlkm1b" (hostedType.Assembly.FullName.StartsWith "tmp")
 
         check "ceklc09wlkm2" hostedType.DeclaringType null
@@ -70,7 +70,7 @@ module CheckEdmxfileTypeProvider =
 
     let instantiateTypeProviderAndCheckOneHostedType( edmxfile : string, typeFullPath ) = 
 
-        let assemblyFile = typeof<FSharp.Data.FxTypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
+        let assemblyFile = typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
         test "CheckFSharpDataTypeProvidersDLLExist" (File.Exists assemblyFile) 
 
         // If/when we care about the "target framework", this mock function will have to be fully implemented
@@ -79,14 +79,14 @@ module CheckEdmxfileTypeProvider =
             true
 
         let tpConfig = new TypeProviderConfig(systemRuntimeContainsType, ResolutionFolder=__SOURCE_DIRECTORY__, RuntimeAssembly=assemblyFile, ReferencedAssemblies=[| |], TemporaryFolder=Path.GetTempPath(), IsInvalidationSupported=false, IsHostedExecution=true)
-        use typeProvider1 = (new FSharp.Data.FxTypeProviders.DesignTime.DataProviders( tpConfig ) :> ITypeProvider)
+        use typeProvider1 = (new FSharp.Data.TypeProviders.DesignTime.DataProviders( tpConfig ) :> ITypeProvider)
 
         // Setup machinery to keep track of the "invalidate event" (see below)
         let invalidateEventCount = ref 0
         typeProvider1.Invalidate.Add(fun _ -> incr invalidateEventCount)
 
         // Load a type provider instance for the type and restart
-        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.FxTypeProviders")
+        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.TypeProviders")
 
         check "CheckAllTPsAreThere" (set [ for i in hostedNamespace1.GetTypes() -> i.Name ]) (set ["DbmlFile"; "EdmxFile"; "ODataService"; "SqlDataConnection";"SqlEntityConnection";"WsdlService"])
 

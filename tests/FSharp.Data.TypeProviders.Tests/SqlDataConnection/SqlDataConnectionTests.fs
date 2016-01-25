@@ -1,7 +1,7 @@
 // #Conformance #TypeProviders #SqlDataConnection
 
 #if COMPILED
-module FSharp.Data.FxTypeProviders.Tests.SqlDataConnectionTests
+module FSharp.Data.TypeProviders.Tests.SqlDataConnectionTests
 #else
 #r "FSharp.Data.TypeProviders.dll"
 #r "System.Management.dll"
@@ -39,12 +39,12 @@ let isSQLExpressInstalled =
 
 let checkHostedType (hostedType: System.Type) = 
         //let hostedType = hostedAppliedType1
-        test "ceklc09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.FxTypeProviders.DesignTime.DataProviders>.Assembly)
+        test "ceklc09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly)
         test "ceklc09wlkm1b" (hostedType.Assembly.FullName.StartsWith "tmp")
 
         check "ceklc09wlkm2" hostedType.DeclaringType null
         check "ceklc09wlkm3" hostedType.DeclaringMethod null
-        check "ceklc09wlkm4" hostedType.FullName "FSharp.Data.FxTypeProviders.SqlDataConnectionApplied"
+        check "ceklc09wlkm4" hostedType.FullName "FSharp.Data.TypeProviders.SqlDataConnectionApplied"
         check "ceklc09wlkm5" (hostedType.GetConstructors()) [| |]
         check "ceklc09wlkm6" (hostedType.GetCustomAttributesData().Count) 1
         check "ceklc09wlkm6" (hostedType.GetCustomAttributesData().[0].Constructor.DeclaringType.FullName) typeof<TypeProviderXmlDocAttribute>.FullName
@@ -56,7 +56,7 @@ let checkHostedType (hostedType: System.Type) =
         check "ceklc09wlkm9b" (m0.GetParameters().Length) 0
         check "ceklc09wlkm9b" (m1.GetParameters().Length) 1
         check "ceklc09wlkm9b" (m0.ReturnType.Name) "Northwnd"
-        check "ceklc09wlkm9b" (m0.ReturnType.FullName) "FSharp.Data.FxTypeProviders.SqlDataConnectionApplied+ServiceTypes+SimpleDataContextTypes+Northwnd"
+        check "ceklc09wlkm9b" (m0.ReturnType.FullName) "FSharp.Data.TypeProviders.SqlDataConnectionApplied+ServiceTypes+SimpleDataContextTypes+Northwnd"
         check "ceklc09wlkm10" (hostedType.GetProperties()) [| |]
         check "ceklc09wlkm11" (hostedType.GetNestedTypes().Length) 1
         check "ceklc09wlkm12" 
@@ -88,7 +88,7 @@ let checkHostedType (hostedType: System.Type) =
 
 
 let instantiateTypeProviderAndCheckOneHostedType(connectionStringName, configFile, useDataDirectory, dataDirectory, useLocalSchemaFile: string option, useForceUpdate: bool option, typeFullPath: string[], resolutionFolder:string option) = 
-        let assemblyFile = typeof<FSharp.Data.FxTypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
+        let assemblyFile = typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
         test "cnlkenkewe" (File.Exists assemblyFile) 
 
         // If/when we care about the "target framework", this mock function will have to be fully implemented
@@ -97,14 +97,14 @@ let instantiateTypeProviderAndCheckOneHostedType(connectionStringName, configFil
             true
 
         let tpConfig = new TypeProviderConfig(systemRuntimeContainsType, ResolutionFolder=__SOURCE_DIRECTORY__, RuntimeAssembly=assemblyFile, ReferencedAssemblies=[| |], TemporaryFolder=Path.GetTempPath(), IsInvalidationSupported=false, IsHostedExecution=true)
-        use typeProvider1 = (new FSharp.Data.FxTypeProviders.DesignTime.DataProviders( tpConfig ) :> ITypeProvider)
+        use typeProvider1 = (new FSharp.Data.TypeProviders.DesignTime.DataProviders( tpConfig ) :> ITypeProvider)
 
         let invalidateEventCount = ref 0
 
         typeProvider1.Invalidate.Add(fun _ -> incr invalidateEventCount)
 
         // Load a type provider instance for the type and restart
-        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.FxTypeProviders")
+        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.TypeProviders")
 
         check "eenewioinw" (set [ for i in hostedNamespace1.GetTypes() -> i.Name ]) (set ["DbmlFile"; "EdmxFile"; "ODataService"; "SqlDataConnection";"SqlEntityConnection";"WsdlService"])
 

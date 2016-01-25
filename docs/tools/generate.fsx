@@ -11,17 +11,17 @@
 // (This is the original behaviour of ProjectScaffold prior to multi project support)
 let referenceBinaries = []
 // Web site location for the generated documentation
-let website = "/FSharp.Data.FxTypeProviders"
+let website = "/FSharp.Data.TypeProviders"
 
-let githubLink = "http://github.com/fsprojects/FSharp.Data.FxTypeProviders"
+let githubLink = "http://github.com/fsprojects/FSharp.Data.TypeProviders"
 
 // Specify more information about your project
 let info =
-  [ "project-name", "FSharp.Data.FxTypeProviders"
+  [ "project-name", "FSharp.Data.TypeProviders"
     "project-author", "Microsoft Corporation and other contributors"
     "project-summary", "F# Type Providers using .NET Framework generators, was FSharp.Data.TypeProviders.dll"
     "project-github", githubLink
-    "project-nuget", "http://nuget.org/packages/FSharp.Data.FxTypeProviders" ]
+    "project-nuget", "http://nuget.org/packages/FSharp.Data.TypeProviders" ]
 
 // --------------------------------------------------------------------------------------
 // For typical project, no changes are needed below

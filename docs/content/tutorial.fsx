@@ -10,8 +10,8 @@ Introducing your project
 Say more
 
 *)
-#r "FSharp.Data.FxTypeProviders.dll"
-open FSharp.Data.FxTypeProviders
+#r "FSharp.Data.TypeProviders.dll"
+open FSharp.Data.TypeProviders
 
 (**
 Some more info

@@ -1,6 +1,6 @@
 // #Conformance #TypeProviders #WsdlService
 #if COMPILED
-module FSharp.Data.FxTypeProviders.Tests.WsdlServiceTests
+module FSharp.Data.TypeProviders.Tests.WsdlServiceTests
 #else
 #r "FSharp.Data.TypeProviders.dll"
 #endif
@@ -24,7 +24,7 @@ type WsdlServiceTest(serviceUri, prefix, checkHostedType) =
     let test caption v = Infrastructure.test (prefix + caption) v
 
     let InstantiateTypeProvider (useLocalSchemaFile : string option, useForceUpdate : bool option, typeFullPath : string[]) = 
-        let assemblyFile = typeof<FSharp.Data.FxTypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
+        let assemblyFile = typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
         test "cnlkenkewe" (File.Exists assemblyFile) 
 
         // If/when we care about the "target framework", this mock function will have to be fully implemented
@@ -33,14 +33,14 @@ type WsdlServiceTest(serviceUri, prefix, checkHostedType) =
             true
 
         let tpConfig = new TypeProviderConfig(systemRuntimeContainsType, ResolutionFolder=__SOURCE_DIRECTORY__, RuntimeAssembly=assemblyFile, ReferencedAssemblies=[| |], TemporaryFolder=Path.GetTempPath(), IsInvalidationSupported=true, IsHostedExecution=true)
-        use typeProvider1 = (new FSharp.Data.FxTypeProviders.DesignTime.DataProviders( tpConfig ) :> ITypeProvider)
+        use typeProvider1 = (new FSharp.Data.TypeProviders.DesignTime.DataProviders( tpConfig ) :> ITypeProvider)
 
         let invalidateEventCount = ref 0
 
         typeProvider1.Invalidate.Add(fun _ -> incr invalidateEventCount)
 
         // Load a type provider instance for the type and restart
-        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.FxTypeProviders")
+        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.TypeProviders")
 
         check "eenewioinw" (set [ for i in hostedNamespace1.GetTypes() -> i.Name ]) (set ["DbmlFile"; "EdmxFile"; "ODataService"; "SqlDataConnection";"SqlEntityConnection";"WsdlService"])
 
@@ -130,7 +130,7 @@ type SimpleWsdlTest() =
         static member Prefix = "simple-"
         static member CheckHostedType(hostedType) = 
             //let hostedType = hostedAppliedType1
-            test "09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.FxTypeProviders.DesignTime.DataProviders>.Assembly)
+            test "09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly)
             test "09wlkm1b" (hostedType.Assembly.FullName.StartsWith "tmp")
 
             check "09wlkm2" hostedType.DeclaringType null
@@ -167,7 +167,7 @@ type XIgniteWsdlTest() =
         static member Prefix = "xignite-"
 
         static member CheckHostedType (hostedType: System.Type) = 
-            test "09wlkm1ad233" (hostedType.Assembly <> typeof<FSharp.Data.FxTypeProviders.DesignTime.DataProviders>.Assembly)
+            test "09wlkm1ad233" (hostedType.Assembly <> typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly)
             test "09wlkm1b2ed1" (hostedType.Assembly.FullName.StartsWith "tmp")
 
             check "09wlkm2" hostedType.DeclaringType null
