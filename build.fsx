@@ -362,14 +362,12 @@ Target "BuildPackage" DoNothing
 
 Target "All" DoNothing
 
-(*
-"Clean"
-  ==> "AssemblyInfo"
-  ==> "Build"
-  ==> "RunTests"
-  ==> 
-*)
-"GenerateReferenceDocs"
+//"Clean"
+//  ==> "AssemblyInfo"
+//  ==> 
+"Build"
+//  ==> "RunTests"
+  ==> "GenerateReferenceDocs"
   ==> "GenerateDocs"
   ==> "All"
   =?> ("ReleaseDocs",isLocalBuild)
