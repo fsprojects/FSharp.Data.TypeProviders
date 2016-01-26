@@ -34,12 +34,29 @@
         <div class="span9" id="main">
           
 <h1><a name="The-EdmxFile-Type-Provider-FSharp-Data-TypeProviders" class="anchor" href="#The-EdmxFile-Type-Provider-FSharp-Data-TypeProviders">The EdmxFile Type Provider (FSharp.Data.TypeProviders)</a></h1>
+<p>Please see <a href="https://msdn.microsoft.com/en-us/library/hh361038.aspx">Walkthrough: Generating F# Types from an EDMX Schema File</a></p>
+<blockquote>
+<p>NOTE: Use <code>FSharp.Data.TypeProviders</code> instead of <code>Microsoft.FSharp.Data.TypeProviders</code></p>
+</blockquote>
+<h2><a name="Reference" class="anchor" href="#Reference">Reference</a></h2>
 <p>Please see the <a href="https://msdn.microsoft.com/en-us/library/hh362324.aspx">MSDN Documentation</a></p>
+<h2><a name="Example" class="anchor" href="#Example">Example</a></h2>
+<p>See below for an example use of the type provider:</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;FSharp.Data.TypeProviders.dll&quot;</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;System.Data.Entity.dll&quot;</span>
+<span class="prep">#r</span> <span class="s">&quot;FSharp.Data.TypeProviders.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">TypeProviders</span>
+
+<span class="k">type</span> <span class="k">internal</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">Edmx1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="t">EdmxFile</span><span class="o">&lt;</span> <span class="s">&quot;SampleModel01.edmx&quot;</span><span class="o">&gt;</span>
+
+<span class="k">let</span> <span class="k">internal</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">container</span> <span class="o">=</span> <span class="k">new</span> <span onmouseout="hideTip(event, 'fs4', 7)" onmouseover="showTip(event, 'fs4', 7)" class="i">Edmx1</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">SampleModel01</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="t">SampleModel01Container</span>()
 </code></pre></td>
 </tr>
 </table>
@@ -47,6 +64,11 @@
 <div class="tip" id="fs1">Multiple items<br />namespace FSharp<br /><br />--------------------<br />namespace Microsoft.FSharp</div>
 <div class="tip" id="fs2">Multiple items<br />namespace FSharp.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
 <div class="tip" id="fs3">namespace FSharp.Data.TypeProviders</div>
+<div class="tip" id="fs4">type internal Edmx1 =<br />&#160;&#160;nested type SampleModel01<br /><br />Full name: Edmx.Edmx1<br /><em><br /><br />&lt;summary&gt;Provides the types to access a database with the schema in an EDMX file, using a LINQ-to-Entities mapping&lt;/summary&gt;&lt;param name=&#39;File&#39;&gt;The EDMX file containing the conceptual, storage and mapping schema descriptions&lt;/param&gt;&lt;param name=&#39;ResolutionFolder&#39;&gt;The folder used to resolve relative file paths at compile-time (default: folder containing the project or script)&lt;/param&gt;</em></div>
+<div class="tip" id="fs5">type EdmxFile<br /><br />Full name: FSharp.Data.TypeProviders.EdmxFile<br /><em><br /><br />&lt;summary&gt;Provides the types to access a database with the schema in an EDMX file, using a LINQ-to-Entities mapping&lt;/summary&gt;&lt;param name=&#39;File&#39;&gt;The EDMX file containing the conceptual, storage and mapping schema descriptions&lt;/param&gt;&lt;param name=&#39;ResolutionFolder&#39;&gt;The folder used to resolve relative file paths at compile-time (default: folder containing the project or script)&lt;/param&gt;</em></div>
+<div class="tip" id="fs6">val internal container : Edmx1.SampleModel01.SampleModel01Container<br /><br />Full name: Edmx.container</div>
+<div class="tip" id="fs7">type internal SampleModel01 =<br />&#160;&#160;nested type Customers<br />&#160;&#160;nested type Orders<br />&#160;&#160;nested type Persons<br />&#160;&#160;nested type SampleModel01Container<br /><br />Full name: Edmx.Edmx1.SampleModel01</div>
+<div class="tip" id="fs8">type internal SampleModel01Container =<br />&#160;&#160;inherit ObjectContext<br />&#160;&#160;interface IDisposable<br />&#160;&#160;new : unit -&gt; SampleModel01Container + 2 overloads<br />&#160;&#160;member AddToOrders : orders: Orders -&gt; unit<br />&#160;&#160;member AddToPersons : persons: Persons -&gt; unit<br />&#160;&#160;member ColumnMapBuilder : CollectionColumnMap with get, set<br />&#160;&#160;member CommandTimeout : Nullable&lt;int&gt; with get, set<br />&#160;&#160;member Connection : DbConnection<br />&#160;&#160;member ContextOptions : ObjectContextOptions<br />&#160;&#160;member DefaultContainerName : string with get, set<br />&#160;&#160;...<br /><br />Full name: Edmx.Edmx1.SampleModel01.SampleModel01Container</div>
 
         </div>
         <div class="span3">
@@ -68,8 +90,6 @@
             <li><a href="/FSharp.Data.TypeProviders/sqlentity.html">SqlEntityConnection Type Provider</a></li>
             <li><a href="/FSharp.Data.TypeProviders/wsdl.html">WsdlService Type Provider</a></li>
 
-            <li class="nav-header">Documentation</li>
-            <li><a href="/FSharp.Data.TypeProviders/reference/index.html">API Reference</a></li>
           </ul>
         </div>
       </div>

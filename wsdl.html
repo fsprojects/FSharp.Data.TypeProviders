@@ -34,12 +34,29 @@
         <div class="span9" id="main">
           
 <h1><a name="The-WsdlService-Type-Provider-FSharp-Data-TypeProviders" class="anchor" href="#The-WsdlService-Type-Provider-FSharp-Data-TypeProviders">The WsdlService Type Provider (FSharp.Data.TypeProviders)</a></h1>
+<p>Please see <a href="https://msdn.microsoft.com/en-us/library/hh156503.aspx">Walkthrough: Walkthrough: Accessing a Web Service by Using Type Providers</a></p>
+<blockquote>
+<p>NOTE: Use <code>FSharp.Data.TypeProviders</code> instead of <code>Microsoft.FSharp.Data.TypeProviders</code></p>
+</blockquote>
+<h2><a name="Reference" class="anchor" href="#Reference">Reference</a></h2>
 <p>Please see the <a href="https://msdn.microsoft.com/en-us/library/hh362324.aspx">MSDN Documentation</a></p>
+<h2><a name="Example" class="anchor" href="#Example">Example</a></h2>
+<p>See below for an example use of the type provider:</p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
 </pre></td>
-<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;FSharp.Data.TypeProviders.dll&quot;</span>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;System.ServiceModel&quot;</span>
+<span class="prep">#r</span> <span class="s">&quot;FSharp.Data.TypeProviders.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">TypeProviders</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">Wsdl1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="t">WsdlService</span><span class="o">&lt;</span><span class="s">&quot;http://api.microsofttranslator.com/V2/Soap.svc&quot;</span><span class="o">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">ctxt</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 7)" onmouseover="showTip(event, 'fs4', 7)" class="t">Wsdl1</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="f">GetBasicHttpBinding_LanguageService</span>()
 </code></pre></td>
 </tr>
 </table>
@@ -47,6 +64,10 @@
 <div class="tip" id="fs1">Multiple items<br />namespace FSharp<br /><br />--------------------<br />namespace Microsoft.FSharp</div>
 <div class="tip" id="fs2">Multiple items<br />namespace FSharp.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
 <div class="tip" id="fs3">namespace FSharp.Data.TypeProviders</div>
+<div class="tip" id="fs4">type Wsdl1 =<br />&#160;&#160;static member GetBasicHttpBinding_LanguageService : unit -&gt; LanguageServiceClient + 1 overload<br />&#160;&#160;nested type ServiceTypes<br /><br />Full name: Wsdl.Wsdl1<br /><em><br /><br />&lt;summary&gt;Provides the types to access a WSDL web service&lt;/summary&gt;&lt;param name=&#39;ServiceUri&#39;&gt;The Uri for the WSDL service&lt;/param&gt;&lt;param name=&#39;LocalSchemaFile&#39;&gt;The .wsdlschema file to store locally cached service schema&lt;/param&gt;&lt;param name=&#39;ForceUpdate&#39;&gt;Require that a direct connection to the service be available at design-time and force the refresh of the local schema file (default: true)&lt;/param&gt;&lt;param name=&#39;ResolutionFolder&#39;&gt;The folder used to resolve relative file paths at compile-time (default: folder containing the project or script)&lt;/param&gt;&lt;param name=&#39;MessageContract&#39;&gt;Generate Message Contract types (default: false)&lt;/param&gt;&lt;param name=&#39;EnableDataBinding&#39;&gt;Implement the System.ComponentModel.INotifyPropertyChanged interface on all DataContract types to enable data binding (default: false)&lt;/param&gt;&lt;param name=&#39;Serializable&#39;&gt;Generate classes marked with the Serializable Attribute (default: false)&lt;/param&gt;&lt;param name=&#39;Async&#39;&gt;Generate both synchronous and asynchronous method signatures (default: false, which means generate only synchronous method signatures)&lt;/param&gt;&lt;param name=&#39;CollectionType&#39;&gt;A fully-qualified or assembly-qualified name of the type to use as a collection data type when code is generated from schemas&lt;/param&gt;</em></div>
+<div class="tip" id="fs5">type WsdlService<br /><br />Full name: FSharp.Data.TypeProviders.WsdlService<br /><em><br /><br />&lt;summary&gt;Provides the types to access a WSDL web service&lt;/summary&gt;&lt;param name=&#39;ServiceUri&#39;&gt;The Uri for the WSDL service&lt;/param&gt;&lt;param name=&#39;LocalSchemaFile&#39;&gt;The .wsdlschema file to store locally cached service schema&lt;/param&gt;&lt;param name=&#39;ForceUpdate&#39;&gt;Require that a direct connection to the service be available at design-time and force the refresh of the local schema file (default: true)&lt;/param&gt;&lt;param name=&#39;ResolutionFolder&#39;&gt;The folder used to resolve relative file paths at compile-time (default: folder containing the project or script)&lt;/param&gt;&lt;param name=&#39;MessageContract&#39;&gt;Generate Message Contract types (default: false)&lt;/param&gt;&lt;param name=&#39;EnableDataBinding&#39;&gt;Implement the System.ComponentModel.INotifyPropertyChanged interface on all DataContract types to enable data binding (default: false)&lt;/param&gt;&lt;param name=&#39;Serializable&#39;&gt;Generate classes marked with the Serializable Attribute (default: false)&lt;/param&gt;&lt;param name=&#39;Async&#39;&gt;Generate both synchronous and asynchronous method signatures (default: false, which means generate only synchronous method signatures)&lt;/param&gt;&lt;param name=&#39;CollectionType&#39;&gt;A fully-qualified or assembly-qualified name of the type to use as a collection data type when code is generated from schemas&lt;/param&gt;</em></div>
+<div class="tip" id="fs6">val ctxt : Wsdl1.ServiceTypes.SimpleDataContextTypes.LanguageServiceClient<br /><br />Full name: Wsdl.ctxt</div>
+<div class="tip" id="fs7">Wsdl1.GetBasicHttpBinding_LanguageService() : Wsdl1.ServiceTypes.SimpleDataContextTypes.LanguageServiceClient<br /><em><br /><br />Get a simplified data context for this WSDL Service. By default, no credentials are set</em><br />Wsdl1.GetBasicHttpBinding_LanguageService(remoteAddress: System.ServiceModel.EndpointAddress) : Wsdl1.ServiceTypes.SimpleDataContextTypes.LanguageServiceClient<br /><em><br /><br />Get a simplified data context for this WSDL Service. By default, no credentials are set</em></div>
 
         </div>
         <div class="span3">
@@ -68,8 +89,6 @@
             <li><a href="/FSharp.Data.TypeProviders/sqlentity.html">SqlEntityConnection Type Provider</a></li>
             <li><a href="/FSharp.Data.TypeProviders/wsdl.html">WsdlService Type Provider</a></li>
 
-            <li class="nav-header">Documentation</li>
-            <li><a href="/FSharp.Data.TypeProviders/reference/index.html">API Reference</a></li>
           </ul>
         </div>
       </div>

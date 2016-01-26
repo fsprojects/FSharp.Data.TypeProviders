@@ -34,12 +34,31 @@
         <div class="span9" id="main">
           
 <h1><a name="The-ODataService-Type-Provider-FSharp-Data-TypeProviders" class="anchor" href="#The-ODataService-Type-Provider-FSharp-Data-TypeProviders">The ODataService Type Provider (FSharp.Data.TypeProviders)</a></h1>
+<p>Please see <a href="https://msdn.microsoft.com/en-us/library/hh156504.aspx">Walkthrough: Accessing an OData Service by Using Type Providers</a></p>
+<blockquote>
+<p>NOTE: Use <code>FSharp.Data.TypeProviders</code> instead of <code>Microsoft.FSharp.Data.TypeProviders</code></p>
+</blockquote>
+<h2><a name="Reference" class="anchor" href="#Reference">Reference</a></h2>
 <p>Please see the <a href="https://msdn.microsoft.com/en-us/library/hh362324.aspx">MSDN Documentation</a></p>
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+<span class="l">9: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;FSharp.Data.TypeProviders.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">TypeProviders</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">OData1</span><span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="t">ODataService</span><span class="o">&lt;</span> <span class="s">@&quot;http://services.odata.org/V2/OData/OData.svc/&quot;</span><span class="o">&gt;</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="t">ST</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 7)" onmouseover="showTip(event, 'fs4', 7)" class="i">OData1</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="t">ServiceTypes</span>
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="t">Address</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 10)" onmouseover="showTip(event, 'fs4', 10)" class="i">OData1</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 11)" onmouseover="showTip(event, 'fs7', 11)" class="i">ServiceTypes</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="t">Address</span>
+<span class="k">module</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="t">M</span> <span class="o">=</span> 
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="i">ctx</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 15)" onmouseover="showTip(event, 'fs4', 15)" class="t">OData1</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 16)" onmouseover="showTip(event, 'fs12', 16)" class="f">GetDataContext</span>()
 </code></pre></td>
 </tr>
 </table>
@@ -47,6 +66,15 @@
 <div class="tip" id="fs1">Multiple items<br />namespace FSharp<br /><br />--------------------<br />namespace Microsoft.FSharp</div>
 <div class="tip" id="fs2">Multiple items<br />namespace FSharp.Data<br /><br />--------------------<br />namespace Microsoft.FSharp.Data</div>
 <div class="tip" id="fs3">namespace FSharp.Data.TypeProviders</div>
+<div class="tip" id="fs4">type OData1 =<br />&#160;&#160;static member GetDataContext : unit -&gt; DemoService + 1 overload<br />&#160;&#160;nested type ServiceTypes<br /><br />Full name: Odata.OData1<br /><em><br /><br />&lt;summary&gt;Provides the types to access an OData service&lt;/summary&gt;&lt;param name=&quot;ServiceUri&quot;&gt;The Uri for the OData service&lt;/param&gt;&lt;param name=&#39;LocalSchemaFile&#39;&gt;The local .csdl file for the service schema&lt;/param&gt;&lt;param name=&#39;ForceUpdate&#39;&gt;Require that a direct connection to the service be available at design-time and force the refresh of the local schema file (default: true)&lt;/param&gt;&lt;param name=&#39;ResolutionFolder&#39;&gt;The folder used to resolve relative file paths at compile-time (default: folder containing the project or script)&lt;/param&gt;&lt;param name=&#39;DataServiceCollection&#39;&gt;Generate collections derived from DataServiceCollection (default: false)&lt;/param&gt;</em></div>
+<div class="tip" id="fs5">type ODataService<br /><br />Full name: FSharp.Data.TypeProviders.ODataService<br /><em><br /><br />&lt;summary&gt;Provides the types to access an OData service&lt;/summary&gt;&lt;param name=&quot;ServiceUri&quot;&gt;The Uri for the OData service&lt;/param&gt;&lt;param name=&#39;LocalSchemaFile&#39;&gt;The local .csdl file for the service schema&lt;/param&gt;&lt;param name=&#39;ForceUpdate&#39;&gt;Require that a direct connection to the service be available at design-time and force the refresh of the local schema file (default: true)&lt;/param&gt;&lt;param name=&#39;ResolutionFolder&#39;&gt;The folder used to resolve relative file paths at compile-time (default: folder containing the project or script)&lt;/param&gt;&lt;param name=&#39;DataServiceCollection&#39;&gt;Generate collections derived from DataServiceCollection (default: false)&lt;/param&gt;</em></div>
+<div class="tip" id="fs6">type ST = OData1.ServiceTypes<br /><br />Full name: Odata.ST</div>
+<div class="tip" id="fs7">type ServiceTypes =<br />&#160;&#160;nested type Address<br />&#160;&#160;nested type Category<br />&#160;&#160;nested type DemoService<br />&#160;&#160;nested type Product<br />&#160;&#160;nested type SimpleDataContextTypes<br />&#160;&#160;nested type Supplier<br /><br />Full name: Odata.OData1.ServiceTypes<br /><em><br /><br />&lt;summary&gt;&lt;para&gt;The full API to the OData Service.&lt;/para&gt;&lt;para&gt;To use the service via the full API, create an instance of one of the types &#39;DemoService&#39;.&lt;/para&gt;&lt;para&gt;You may need to set the Credentials property on the instance.&lt;/para&gt;&lt;/summary&gt;</em></div>
+<div class="tip" id="fs8">type Address = OData1.ServiceTypes.Address<br /><br />Full name: Odata.Address</div>
+<div class="tip" id="fs9">type Address =<br />&#160;&#160;new : unit -&gt; Address<br />&#160;&#160;member City : string with get, set<br />&#160;&#160;member Country : string with get, set<br />&#160;&#160;member State : string with get, set<br />&#160;&#160;member Street : string with get, set<br />&#160;&#160;member ZipCode : string with get, set<br /><br />Full name: Odata.OData1.ServiceTypes.Address</div>
+<div class="tip" id="fs10">module M<br /><br />from Odata</div>
+<div class="tip" id="fs11">val ctx : OData1.ServiceTypes.SimpleDataContextTypes.DemoService<br /><br />Full name: Odata.M.ctx</div>
+<div class="tip" id="fs12">OData1.GetDataContext() : OData1.ServiceTypes.SimpleDataContextTypes.DemoService<br /><em><br /><br />Get a simplified data context for this OData Service. By default, no credentials are set</em><br />OData1.GetDataContext(uri: System.Uri) : OData1.ServiceTypes.SimpleDataContextTypes.DemoService<br /><em><br /><br />Get a simplified data context for this OData Service. By default, no credentials are set</em></div>
 
         </div>
         <div class="span3">
@@ -68,8 +96,6 @@
             <li><a href="/FSharp.Data.TypeProviders/sqlentity.html">SqlEntityConnection Type Provider</a></li>
             <li><a href="/FSharp.Data.TypeProviders/wsdl.html">WsdlService Type Provider</a></li>
 
-            <li class="nav-header">Documentation</li>
-            <li><a href="/FSharp.Data.TypeProviders/reference/index.html">API Reference</a></li>
           </ul>
         </div>
       </div>
