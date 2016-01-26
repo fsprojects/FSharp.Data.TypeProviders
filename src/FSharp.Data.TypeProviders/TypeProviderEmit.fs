@@ -867,9 +867,7 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
                       typeMembers td 
 
               let defineCustomAttrs f (cattrs: IList<CustomAttributeData>) = 
-                  printfn "defining custom attributes"
                   for attr in cattrs do
-                      printfn "defining custom attribute (1)"
                       let constructorArgs = [ for x in attr.ConstructorArguments -> x.Value ]
                       let namedProps,namedPropVals = [ for x in attr.NamedArguments do match x.MemberInfo with :? PropertyInfo as pi -> yield (pi, x.TypedValue.Value) | _ -> () ] |> List.unzip
                       let namedFields,namedFieldVals = [ for x in attr.NamedArguments do match x.MemberInfo with :? FieldInfo as pi -> yield (pi, x.TypedValue.Value) | _ -> () ] |> List.unzip
