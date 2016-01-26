@@ -7,6 +7,13 @@
 The DbmlFile Type Provider (FSharp.Data.TypeProviders)
 ========================
 
+Please see [Walkthrough: Generating F# Types from a DBML File](https://msdn.microsoft.com/en-us/library/hh361039.aspx)
+
+> NOTE: Use ``FSharp.Data.TypeProviders`` instead of ``Microsoft.FSharp.Data.TypeProviders`` 
+
+Reference 
+---------
+
 Please see the [MSDN Documentation](https://msdn.microsoft.com/en-us/library/hh362324.aspx)
 
 *)

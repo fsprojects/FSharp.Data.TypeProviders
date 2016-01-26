@@ -7,9 +7,23 @@
 The ODataService Type Provider (FSharp.Data.TypeProviders)
 ========================
 
+
+Please see [Walkthrough: Accessing an OData Service by Using Type Providers](https://msdn.microsoft.com/en-us/library/hh156504.aspx)
+
+> NOTE: Use ``FSharp.Data.TypeProviders`` instead of ``Microsoft.FSharp.Data.TypeProviders`` 
+
+Reference 
+---------
+
 Please see the [MSDN Documentation](https://msdn.microsoft.com/en-us/library/hh362324.aspx)
 
 *)
 #r "FSharp.Data.TypeProviders.dll"
 open FSharp.Data.TypeProviders
 
+type OData1= ODataService< @"http://services.odata.org/V2/OData/OData.svc/">
+
+type ST = OData1.ServiceTypes
+type Address = OData1.ServiceTypes.Address
+module M = 
+    let ctx = OData1.GetDataContext()

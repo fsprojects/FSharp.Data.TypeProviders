@@ -10,6 +10,7 @@ FSharp.Data.TypeProviders
 The F# Type Providers SqlDataConnection, SqlEntityConnection, ODataService, 
 WsdlService and EdmxFile using .NET Framework generators.
 
+
 <div class="row">
   <div class="span1"></div>
   <div class="span6">
@@ -21,9 +22,10 @@ WsdlService and EdmxFile using .NET Framework generators.
   <div class="span1"></div>
 </div>
 
+> NOTE: Use ``FSharp.Data.TypeProviders`` instead of ``Microsoft.FSharp.Data.TypeProviders`` 
 
 
-Contents:
+This component contains the following F# type providers:
 
 * [DbmlFile](dbml.html) - Provides the types for a database schema encoded in a .dbml file.
 
@@ -40,7 +42,8 @@ Contents:
 History
 -------
 
-This component is shipped in the Visual F# Tools at version 4.3.0.0.  The proposal is that
+This component is shipped in the Visual F# Tools for Visual Studio 2012-2015 at version 4.3.0.0.  
+This repository implemented versions 5.0.0.0 and above. The proposal is that
 subsequent versions and development will happen as an F# community component.
 
 Referencing the library

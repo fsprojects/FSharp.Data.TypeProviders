@@ -214,26 +214,36 @@ let instantiateTypeProviderAndCheckOneHostedType(connectionStringName, configFil
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 1`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     instantiateTypeProviderAndCheckOneHostedType(None, None, false, None, None, None, None, [| "SqlEntityConnectionApplied" |], None)
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 2`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     // Use an implied app.config config file, use the current directory as the DataDirectory
     instantiateTypeProviderAndCheckOneHostedType(Some "ConnectionString1", None, true, None, None, None, None, [| "SqlEntityConnectionApplied" |], None)
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 3`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     // Use a config file, use an explicit relative DataDirectory
     instantiateTypeProviderAndCheckOneHostedType(Some "ConnectionString2", Some "app.config", true, Some "DataDirectory", None, None, None, [| "SqlEntityConnectionApplied" |], None)
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 4`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     // Use an absolute config file, use an absoltue DataDirectory
     instantiateTypeProviderAndCheckOneHostedType(Some "ConnectionString3", Some (__SOURCE_DIRECTORY__ ++ "test.config"), true, Some (__SOURCE_DIRECTORY__ ++ "DataDirectory"), None, None, None, [| "SqlEntityConnectionApplied" |], None)
 
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 5`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     let schemaFile2 = Path.Combine(__SOURCE_DIRECTORY__, "nwind2.ssdl")
     (try File.Delete schemaFile2 with _ -> ())
     instantiateTypeProviderAndCheckOneHostedType(None, None, false, None, None, Some (Path.Combine(__SOURCE_DIRECTORY__, "nwind2.ssdl")), Some true, [| "SqlEntityConnectionApplied" |], None)
@@ -252,6 +262,8 @@ let ``SqlEntity Tests 5`` () =
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 6`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     let schemaFile3 = Path.Combine(__SOURCE_DIRECTORY__, "nwind3.ssdl") 
     (try File.Delete schemaFile3 with _ -> ())
     instantiateTypeProviderAndCheckOneHostedType(None, None, false, None, None, Some schemaFile3, None, [| "SqlEntityConnectionApplied" |],None)
@@ -261,6 +273,8 @@ let ``SqlEntity Tests 6`` () =
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 7`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     let schemaFile4 = Path.Combine(__SOURCE_DIRECTORY__, "nwind4.ssdl") 
     (try File.Delete schemaFile4 with _ -> ())
     instantiateTypeProviderAndCheckOneHostedType(None, None, false, None, Some "MyEntityContainer", Some schemaFile4, None, [| "SqlEntityConnectionApplied" |], None)

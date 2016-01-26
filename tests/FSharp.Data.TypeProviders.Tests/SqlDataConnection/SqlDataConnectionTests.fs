@@ -216,30 +216,42 @@ let instantiateTypeProviderAndCheckOneHostedType(connectionStringName, configFil
 
 [<Test; Category("SqlData")>]
 let ``SqlData.Tests 1`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     instantiateTypeProviderAndCheckOneHostedType(None, None, false, None, None, None, [| "SqlDataConnectionApplied" |], None)
 
 [<Test; Category("SqlData")>]
 let ``SqlData Tests 2`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     // Use an implied app.config config file, use the current directory as the DataDirectory
     instantiateTypeProviderAndCheckOneHostedType(Some "ConnectionString1", None, true, None, None, None, [| "SqlDataConnectionApplied" |], None)
 
 [<Test; Category("SqlData")>]
 let ``SqlData Tests 3`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     // Use a config file, use an explicit relative DataDirectory
     instantiateTypeProviderAndCheckOneHostedType(Some "ConnectionString2", Some "app.config", true, Some "DataDirectory", None, None, [| "SqlDataConnectionApplied" |], None)
 
 [<Test; Category("SqlData")>]
 let ``SqlData Tests 4`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     // Use a config file, use an explicit relative DataDirectory and an explicit ResolutionFolder.
     instantiateTypeProviderAndCheckOneHostedType(Some "ConnectionString2", Some "app.config", true, Some "DataDirectory", None, None, [| "SqlDataConnectionApplied" |], Some "ExampleResolutionFolder")
 
 [<Test; Category("SqlData")>]
 let ``SqlData Tests 5`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     // Use an absolute config file, use an absolute DataDirectory 
     instantiateTypeProviderAndCheckOneHostedType(Some "ConnectionString3", Some (__SOURCE_DIRECTORY__ + @"\test.config"), true, Some (__SOURCE_DIRECTORY__ + @"\DataDirectory"), None, None, [| "SqlDataConnectionApplied" |], None)
 
 [<Test; Category("SqlData")>]
 let ``SqlData Tests 6`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     let schemaFile2 = Path.Combine(__SOURCE_DIRECTORY__, "nwind2.dbml")
     (try File.Delete schemaFile2 with _ -> ())
     instantiateTypeProviderAndCheckOneHostedType(None, None, false, None, Some (Path.Combine(__SOURCE_DIRECTORY__, "nwind2.dbml")), Some true, [| "SqlDataConnectionApplied" |], None)
@@ -258,6 +270,8 @@ let ``SqlData Tests 6`` () =
 
 [<Test; Category("SqlData")>]
 let ``SqlData Tests 7`` () =
+  // Database not yet installed on appveyor
+  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
     let schemaFile3 = Path.Combine(__SOURCE_DIRECTORY__, "nwind3.dbml") 
     (try File.Delete schemaFile3 with _ -> ())
     instantiateTypeProviderAndCheckOneHostedType(None, None, false, None, Some schemaFile3, None, [| "SqlDataConnectionApplied" |], None)
