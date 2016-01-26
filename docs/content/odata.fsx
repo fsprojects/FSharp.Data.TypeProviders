@@ -17,6 +17,13 @@ Reference
 
 Please see the [MSDN Documentation](https://msdn.microsoft.com/en-us/library/hh362324.aspx)
 
+Example
+-------
+
+Please see [Walkthrough: Accessing an OData Service by Using Type Providers](https://msdn.microsoft.com/en-us/library/hh156504.aspx)
+
+See also below for a micro use of the type provider:
+
 *)
 #r "FSharp.Data.TypeProviders.dll"
 open FSharp.Data.TypeProviders

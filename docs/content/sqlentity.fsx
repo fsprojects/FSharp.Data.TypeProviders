@@ -16,6 +16,13 @@ Reference
 
 Please see the [MSDN Documentation](https://msdn.microsoft.com/en-us/library/hh362324.aspx)
 
+Example
+-------
+
+Please see [Walkthrough: Accessing a SQL Database by Using Type Providers and Entities](https://msdn.microsoft.com/en-us/library/hh361035.aspx)
+
+See also below for a micro example use of the type provider:
+
 *)
 #r "System.Data.Entity"
 #r "FSharp.Data.TypeProviders.dll"

@@ -27,8 +27,6 @@ WsdlService and EdmxFile using .NET Framework generators.
 
 This component contains the following F# type providers:
 
-* [DbmlFile](dbml.html) - Provides the types for a database schema encoded in a .dbml file.
-
 * [EdmxFile](edmx.html) - Provides the types to access a database with the schema in an .edmx file, using a LINQ to Entities mapping.
 
 * [ODataService](odata.html) - Provides the types to access an OData service.
@@ -38,6 +36,9 @@ This component contains the following F# type providers:
 * [SqlEntityConnection](sqlentity.html) - Provides the types to access a database, using a LINQ to Entities mapping.
 
 * [WsdlService](wsdl.html) - Provides the types for a Web Services Description Language (WSDL) web service.
+
+* [DbmlFile](dbml.html) - Provides the types for a database schema encoded in a .dbml file.
+
 
 History
 -------

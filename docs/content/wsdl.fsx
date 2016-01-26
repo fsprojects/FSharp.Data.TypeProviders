@@ -19,7 +19,9 @@ Please see the [MSDN Documentation](https://msdn.microsoft.com/en-us/library/hh3
 Example
 ------
 
-See below for an example use of the type provider:
+Please see [Walkthrough: Walkthrough: Accessing a Web Service by Using Type Providers](https://msdn.microsoft.com/en-us/library/hh156503.aspx)
+
+See also below for a micro example use of the type provider:
 
 *)
 #r "System.ServiceModel"

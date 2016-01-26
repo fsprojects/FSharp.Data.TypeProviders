@@ -19,7 +19,9 @@ Please see the [MSDN Documentation](https://msdn.microsoft.com/en-us/library/hh3
 Example 
 ---------
 
-See below for an example use of the type provider:
+Please see [Walkthrough: Generating F# Types from an EDMX Schema File](https://msdn.microsoft.com/en-us/library/hh361038.aspx)
+
+See also below for a micro use of the type provider:
 *)
 #r "System.Data.Entity.dll"
 #r "FSharp.Data.TypeProviders.dll"

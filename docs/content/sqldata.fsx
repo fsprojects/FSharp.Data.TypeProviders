@@ -19,7 +19,9 @@ Please see the [MSDN Documentation](https://msdn.microsoft.com/en-us/library/hh3
 Example
 ------
 
-See below for an example use of the type provider:
+Please see [Walkthrough: Accessing a SQL Database by Using Type Providers](https://msdn.microsoft.com/en-us/library/hh361033.aspx)
+
+See also below for a micro example use of the type provider:
 
 *)
 #r "System.Data.Linq.dll"
