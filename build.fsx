@@ -365,7 +365,7 @@ Target "All" DoNothing
 "Clean"
   ==> "AssemblyInfo"
   ==> "Build"
-//  ==> "RunTests"
+  ==> "RunTests"
   ==> "GenerateReferenceDocs"
   ==> "GenerateDocs"
   ==> "All"
