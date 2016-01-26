@@ -45,23 +45,16 @@ module Misc =
                               CustomAttributeNamedArgument(typeof<TypeProviderDefinitionLocationAttribute>.GetProperty("Column"), CustomAttributeTypedArgument(typeof<int>, column)) 
                            |] }
 
-(*
-    let mkParamArrayAttributeData() = 
-        { new CustomAttributeData() with 
-                member __.Constructor =  typeof<ParamArrayAttribute>.GetConstructors().[0]
-                member __.ConstructorArguments = upcast [| |]
-                member __.NamedArguments = upcast [| |] }
-
-    let mkObsoleteAttributeData(msg:string) = 
-        { new CustomAttributeData() with 
-                member __.Constructor =  typeof<ObsoleteAttribute>.GetConstructors().[0]
-                member __.ConstructorArguments = upcast [| CustomAttributeTypedArgument(typeof<string>, msg)  |]
-                member __.NamedArguments = upcast [| |] }
-*)
-
+    let mkObsoleteAttributeCustomAttributeData(message:string, isError: bool) = 
+          { new CustomAttributeData() with 
+                  member __.Constructor =  typeof<System.ObsoleteAttribute>.GetConstructors() |> Array.find (fun x -> x.GetParameters().Length = 2)
+                  member __.ConstructorArguments = upcast [|CustomAttributeTypedArgument(typeof<string>, message) ; CustomAttributeTypedArgument(typeof<bool>, isError)  |]
+                  member __.NamedArguments = upcast [| |] }
+  
     type CustomAttributesImpl() =
         let customAttributes = ResizeArray<CustomAttributeData>()
         let mutable hideObjectMethods = false
+        let mutable obsoleteMessage = None
         let mutable xmlDocDelayed = None
         let mutable xmlDocAlwaysRecomputed = None
 
@@ -76,9 +69,11 @@ module Misc =
             lazy 
                [| if hideObjectMethods then yield mkEditorHideMethodsCustomAttributeData() 
                   match xmlDocDelayed with None -> () | Some _ -> customAttributes.Add(mkXmlDocCustomAttributeDataLazy xmlDocDelayedText) 
+                  match obsoleteMessage with None -> () | Some s -> customAttributes.Add(mkObsoleteAttributeCustomAttributeData s) 
                   yield! customAttributes |]
 
         member __.AddDefinitionLocation(line:int,column:int,filePath:string) = customAttributes.Add(mkDefinitionLocationAttributeCustomAttributeData(line, column, filePath))
+        member __.AddObsolete(message : string, isError) = obsoleteMessage <- Some (message,isError)
         member __.AddXmlDocComputed(xmlDoc : unit -> string) = xmlDocAlwaysRecomputed <- Some xmlDoc
         member __.AddXmlDocDelayed(xmlDoc : unit -> string) = xmlDocDelayed <- Some xmlDoc
         member this.AddXmlDoc(text:string) =  this.AddXmlDocDelayed (fun () -> text)
@@ -185,7 +180,9 @@ type ProvidedConstructor(parameters : ProvidedParameter list) =
     member this.AddXmlDocComputed xmlDoc                    = customAttributesImpl.AddXmlDocComputed xmlDoc
     member this.AddXmlDocDelayed xmlDoc                     = customAttributesImpl.AddXmlDocDelayed xmlDoc
     member this.AddXmlDoc xmlDoc                            = customAttributesImpl.AddXmlDoc xmlDoc
+    member this.AddObsoleteAttribute (message,?isError)     = customAttributesImpl.AddObsolete (message,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
+    member this.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
     member this.HideObjectMethods with set v                = customAttributesImpl.HideObjectMethods <- v
     override this.GetCustomAttributesData()                 = customAttributesImpl.GetCustomAttributesData()
 
@@ -235,7 +232,9 @@ type ProvidedMethod(methodName: string, parameters: ProvidedParameter list, retu
     member this.AddXmlDocComputed xmlDoc                    = customAttributesImpl.AddXmlDocComputed xmlDoc
     member this.AddXmlDocDelayed xmlDoc                     = customAttributesImpl.AddXmlDocDelayed xmlDoc
     member this.AddXmlDoc xmlDoc                            = customAttributesImpl.AddXmlDoc xmlDoc
+    member this.AddObsoleteAttribute (message,?isError)     = customAttributesImpl.AddObsolete (message,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
+    member this.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
     override this.GetCustomAttributesData()                 = customAttributesImpl.GetCustomAttributesData()
 
     member this.SetMethodAttrs m = methodAttrs <- m
@@ -304,7 +303,9 @@ type ProvidedProperty(propertyName:string,propertyType:Type, ?parameters:Provide
     member this.AddXmlDocComputed xmlDoc                    = customAttributesImpl.AddXmlDocComputed xmlDoc
     member this.AddXmlDocDelayed xmlDoc                     = customAttributesImpl.AddXmlDocDelayed xmlDoc
     member this.AddXmlDoc xmlDoc                            = customAttributesImpl.AddXmlDoc xmlDoc
+    member this.AddObsoleteAttribute (message,?isError)     = customAttributesImpl.AddObsolete (message,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
+    member this.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
     override this.GetCustomAttributesData()                 = customAttributesImpl.GetCustomAttributesData()
 
     member this.DeclaringTypeImpl with set x = declaringType <- x // check: not set twice
@@ -552,8 +553,10 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     member this.AddXmlDocComputed xmlDoc                    = customAttributesImpl.AddXmlDocComputed xmlDoc
     member this.AddXmlDocDelayed xmlDoc                     = customAttributesImpl.AddXmlDocDelayed xmlDoc
     member this.AddXmlDoc xmlDoc                            = customAttributesImpl.AddXmlDoc xmlDoc
+    member this.AddObsoleteAttribute (message,?isError)     = customAttributesImpl.AddObsolete (message,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
     member this.HideObjectMethods with set v                = customAttributesImpl.HideObjectMethods <- v
+    member this.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
     override this.GetCustomAttributesData()                 = customAttributesImpl.GetCustomAttributesData()
 
     new (assembly:Assembly,namespaceName,className,baseType) = new ProvidedTypeDefinition(TypeContainer.Namespace (assembly,namespaceName), className, baseType)
@@ -863,6 +866,16 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
                   for td in typeDefinitions do 
                       typeMembers td 
 
+              let defineCustomAttrs f (cattrs: IList<CustomAttributeData>) = 
+                  printfn "defining custom attributes"
+                  for attr in cattrs do
+                      printfn "defining custom attribute (1)"
+                      let constructorArgs = [ for x in attr.ConstructorArguments -> x.Value ]
+                      let namedProps,namedPropVals = [ for x in attr.NamedArguments do match x.MemberInfo with :? PropertyInfo as pi -> yield (pi, x.TypedValue.Value) | _ -> () ] |> List.unzip
+                      let namedFields,namedFieldVals = [ for x in attr.NamedArguments do match x.MemberInfo with :? FieldInfo as pi -> yield (pi, x.TypedValue.Value) | _ -> () ] |> List.unzip
+                      let cab = CustomAttributeBuilder(attr.Constructor, Array.ofList constructorArgs, Array.ofList namedProps, Array.ofList namedPropVals, Array.ofList namedFields, Array.ofList namedFieldVals)
+                      f cab
+
               // phase 2 - emit member definitions
               iterateTypes (fun tb ptd -> 
                   let defineMeth (minfo:MethodInfo) = 
@@ -887,6 +900,8 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
 
               // phase 3 - emit member code
               iterateTypes (fun  tb ptd -> 
+                  let cattr = ptd.GetCustomAttributesDataImpl() 
+                  defineCustomAttrs tb.SetCustomAttribute cattr
                   // Allow at most one constructor, and use its arguments as the fields of the type
                   let ctorArgs, ctorInfoOpt =
                       match ptd.GetConstructors(BindingFlags.Public ||| BindingFlags.NonPublic) |> Seq.toList with 
@@ -902,6 +917,8 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
                 
                       assert ctorMap.ContainsKey pcinfo
                       let cb = ctorMap.[pcinfo]
+                      let cattr = pcinfo.GetCustomAttributesDataImpl() 
+                      defineCustomAttrs cb.SetCustomAttribute cattr
                       let ilg = cb.GetILGenerator()
                       ilg.Emit(OpCodes.Ldarg_0)
                       let minfo = typeof<obj>.GetConstructor [| |]
@@ -919,6 +936,8 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
                     | :? ProvidedMethod as pminfo   -> 
                       let mb = methMap.[pminfo]
                       let ilg = mb.GetILGenerator()
+                      let cattr = pminfo.GetCustomAttributesDataImpl() 
+                      defineCustomAttrs mb.SetCustomAttribute cattr
                       let pop () = ilg.Emit(OpCodes.Pop)
 
                       let parameterVars = 
@@ -1120,8 +1139,10 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
                      let bodyMethBuilder = methMap.[bodyMethInfo]
                      tb.DefineMethodOverride(bodyMethBuilder,declMethInfo)
 
-                  for pinfo in ptd.GetProperties(BindingFlags.Public ||| BindingFlags.NonPublic) do
+                  for pinfo in ptd.GetProperties(BindingFlags.Public ||| BindingFlags.NonPublic) |> Seq.choose (function :? ProvidedProperty as pe -> Some pe | _ -> None) do
                       let pb = tb.DefineProperty(pinfo.Name, pinfo.Attributes, convType pinfo.PropertyType, [| for p in pinfo.GetIndexParameters() -> convType p.ParameterType |])
+                      let cattr = pinfo.GetCustomAttributesDataImpl() 
+                      defineCustomAttrs pb.SetCustomAttribute cattr
                       if  pinfo.CanRead then 
                           let minfo = pinfo.GetGetMethod(true)
                           pb.SetGetMethod (methMap.[minfo :?> ProvidedMethod ])

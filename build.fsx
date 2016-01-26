@@ -362,10 +362,9 @@ Target "BuildPackage" DoNothing
 
 Target "All" DoNothing
 
-//"Clean"
-//  ==> "AssemblyInfo"
-//  ==> 
-"Build"
+"Clean"
+  ==> "AssemblyInfo"
+  ==> "Build"
 //  ==> "RunTests"
   ==> "GenerateReferenceDocs"
   ==> "GenerateDocs"

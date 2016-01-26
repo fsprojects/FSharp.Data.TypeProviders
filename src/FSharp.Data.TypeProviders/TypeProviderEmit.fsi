@@ -21,6 +21,9 @@ type internal ProvidedConstructor =
     /// Create a new provided constructor. It is not initially associated with any specific provided type definition.
     new : parameters: ProvidedParameter list -> ProvidedConstructor
     
+    /// Add a 'System.Obsolete' attribute to this provided constructor
+    member AddObsoleteAttribute : message: string * ?isError: bool -> unit   
+    
     /// Add XML documentation information to this provided constructor
     member AddXmlDoc          : xmlDoc: string -> unit   
     
@@ -45,6 +48,9 @@ type internal ProvidedMethod =
 
     /// Create a new provided method. It is not initially associated with any specific provided type definition.
     new : methodName:string * parameters: ProvidedParameter list * returnType: Type -> ProvidedMethod
+
+    /// Add a 'System.Obsolete' attribute to this provided constructor
+    member AddObsoleteAttribute : message: string * ?isError: bool -> unit   
 
     /// Add XML documentation information to this provided constructor
     member AddXmlDoc            : xmlDoc: string -> unit    
@@ -79,6 +85,9 @@ type internal ProvidedProperty =
 
     /// Create a new provided type. It is not initially associated with any specific provided type definition.
     new  : propertyName: string * propertyType: Type * ?parameters:ProvidedParameter list -> ProvidedProperty
+
+    /// Add a 'System.Obsolete' attribute to this provided constructor
+    member AddObsoleteAttribute : message: string * ?isError: bool -> unit   
 
     /// Add XML documentation information to this provided constructor
     member AddXmlDoc            : xmlDoc: string -> unit    
@@ -128,6 +137,9 @@ type internal ProvidedTypeDefinition =
 
     /// Specifies that the given method body implements the given method declaration.
     member DefineMethodOverride : methodInfoBody: ProvidedMethod * methodInfoDeclaration: MethodInfo -> unit
+
+    /// Add a 'System.Obsolete' attribute to this provided constructor
+    member AddObsoleteAttribute : message: string * ?isError: bool -> unit   
 
     /// Add XML documentation information to this provided constructor
     member AddXmlDoc             : xmlDoc: string -> unit    

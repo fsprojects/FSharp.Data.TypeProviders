@@ -25,17 +25,17 @@ WsdlService and EdmxFile using .NET Framework generators.
 
 Contents:
 
-* [DbmlFile Type Provider](dbml.html) - Provides the types for a database schema encoded in a .dbml file.
+* [DbmlFile](dbml.html) - Provides the types for a database schema encoded in a .dbml file.
 
-* [EdmxFile Type Provider](edmx.html) - Provides the types to access a database with the schema in an .edmx file, using a LINQ to Entities mapping.
+* [EdmxFile](edmx.html) - Provides the types to access a database with the schema in an .edmx file, using a LINQ to Entities mapping.
 
-* [ODataService Type Provider](odata.html) - Provides the types to access an OData service.
+* [ODataService](odata.html) - Provides the types to access an OData service.
 
-* [SqlDataConnection Type Provider](sqldata.html) - Provides the types to access a SQL database.
+* [SqlDataConnection](sqldata.html) - Provides the types to access a SQL database.
 
-* [SqlEntityConnection_ Type Provider](sqlentity.html) - Provides the types to access a database, using a LINQ to Entities mapping.
+* [SqlEntityConnection](sqlentity.html) - Provides the types to access a database, using a LINQ to Entities mapping.
 
-* [WsdlService Type Provider](wsdl.html) - Provides the types for a Web Services Description Language (WSDL) web service.
+* [WsdlService](wsdl.html) - Provides the types for a Web Services Description Language (WSDL) web service.
 
 History
 -------
@@ -57,12 +57,6 @@ open FSharp.Data.TypeProviders
 
 (**
 
-Samples & documentation
------------------------
-
- * [API Reference](reference/index.html) contains automatically generated documentation for all types, modules
-   and functions in the library. This includes additional brief samples on using most of the
-   functions.
  
 Contributing and copyright
 --------------------------
