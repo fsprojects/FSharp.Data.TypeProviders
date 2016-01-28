@@ -1,2 +1,1 @@
-group Build
-    FSharp.Core
+FSharp.Core
