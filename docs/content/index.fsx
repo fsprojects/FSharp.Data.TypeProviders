@@ -8,7 +8,7 @@ FSharp.Data.TypeProviders
 ======================
 
 The F# Type Providers SqlDataConnection, SqlEntityConnection, ODataService, 
-WsdlService and EdmxFile using .NET Framework generators.
+WsdlService, DbmlFile and EdmxFile using .NET Framework generators.
 
 
 <div class="row">
