@@ -656,7 +656,7 @@ module internal SvcUtil =
         if String.IsNullOrWhiteSpace uri then
             failwith (FSData.SR.invalidWsdlUri())
 
-    let buildTypeFromWsdlUri (namespaceName, wsdlUri : string, localSchemaFile:string, forceUpdate:bool, messageContract, enableDataBinding, serializable, async, collectionType) =
+    let buildTypeFromWsdlUri (namespaceName, wsdlUri : string, localSchemaFile:string, forceUpdate:bool, messageContract, enableDataBinding, serializable, async, collectionType, wrapped) =
         
         validateWsdlUri wsdlUri
 
@@ -708,6 +708,7 @@ module internal SvcUtil =
             let args = if serializable                              then sprintf "%s /serializable"      args else args
             let args = if async                                     then sprintf "%s /async"             args else args
             let args = if not (String.IsNullOrWhiteSpace collectionType) then sprintf "%s /collectionType:%s" args collectionType else args
+            let args = if wrapped                                   then sprintf "%s /wrapped"           args else args
             args
         
         Util.shell(Path.GetTempPath(), Util.svcUtilExe(), svcUtilArgs, Some formatErr)
