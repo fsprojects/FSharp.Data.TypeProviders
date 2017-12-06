@@ -50,11 +50,13 @@ let checkHostedType (hostedType: System.Type) =
         check "ceklc09wlkm6" (hostedType.GetCustomAttributesData().[0].Constructor.DeclaringType.FullName) typeof<TypeProviderXmlDocAttribute>.FullName
         check "ceklc09wlkm7" (hostedType.GetEvents()) [| |]
         check "ceklc09wlkm8" (hostedType.GetFields()) [| |]
-        check "ceklc09wlkm9" [ for m in hostedType.GetMethods() -> m.Name ] [ "GetDataContext" ; "GetDataContext" ]
+        check "ceklc09wlkm9" [ for m in hostedType.GetMethods() -> m.Name ] [ "GetDataContext" ; "GetDataContext"; "GetDataContext" ]
         let m0 = hostedType.GetMethods().[0]
         let m1 = hostedType.GetMethods().[1]
+        let m2 = hostedType.GetMethods().[2]
         check "ceklc09wlkm9b" (m0.GetParameters().Length) 0
         check "ceklc09wlkm9b" (m1.GetParameters().Length) 1
+        check "ceklc09wlkm9b" (m2.GetParameters().Length) 1
         check "ceklc09wlkm9b" (m0.ReturnType.Name) "Northwnd"
         check "ceklc09wlkm9b" (m0.ReturnType.FullName) "FSharp.Data.TypeProviders.SqlDataConnectionApplied+ServiceTypes+SimpleDataContextTypes+Northwnd"
         check "ceklc09wlkm10" (hostedType.GetProperties()) [| |]
