@@ -103,7 +103,9 @@ module internal Util =
                     | _ -> key.Dispose()
                     reg32view.Dispose()     // if reg32view were really null, we would not be here and the user would have more serious issues not being able to access HKLM
 
-        let SDK_REGPATHS = [ @"Software\Microsoft\Microsoft SDKs\NETFXSDK\4.6\WinSDK-NetFx40Tools"
+        let SDK_REGPATHS = [ @"Software\Microsoft\Microsoft SDKs\NETFXSDK\4.6.2\WinSDK-NetFx40Tools"
+                             @"Software\Microsoft\Microsoft SDKs\NETFXSDK\4.6.1\WinSDK-NetFx40Tools"
+                             @"Software\Microsoft\Microsoft SDKs\NETFXSDK\4.6\WinSDK-NetFx40Tools"
                              @"Software\Microsoft\Microsoft SDKs\Windows\v8.1A\WinSDK-NetFx40Tools"
                              @"Software\Microsoft\Microsoft SDKs\Windows\v8.0A\WinSDK-NetFx40Tools"
                              @"Software\Microsoft\Microsoft SDKs\Windows\v7.1\WinSDK-NetFx40Tools"
