@@ -655,7 +655,8 @@ type public DataProviders(config:TypeProviderConfig) =
                         let connectionStringExpr = getRuntimeConnectionStringExpr (connectionString, usingConfigFileInfo, configFileNameParam, dataDirectoryParam, resolutionFolderParam)
                         Expr.NewObject(contextType.GetConstructor [| typeof<string> |], [ connectionStringExpr ])))
 
-                      (methodName, [("connectionString",typeof<string>)], (fun (args:Expr list) -> Expr.NewObject(contextType.GetConstructor [| typeof<string> |], [ args.[0] ]))) ]
+                      (methodName, [("connectionString",typeof<string>)], (fun (args:Expr list) -> Expr.NewObject(contextType.GetConstructor [| typeof<string> |], [ args.[0] ])))
+                      (methodName, [("connection",typeof<IDbConnection>)], (fun (args:Expr list) -> Expr.NewObject(contextType.GetConstructor [| typeof<IDbConnection> |], [ args.[0] ]))) ]
                 contextType, contextType.BaseType, staticMethods),
             Some "GetDataContext",
             (FSData.SR.sqlDataConnection()), 
