@@ -119,7 +119,11 @@ module internal Util =
 
     let sdkUtil name = Path.Combine(sdkPath(), name)
 
-    let svcUtilExe () = sdkUtil "svcutil.exe"
+    let svcUtilExe toolPath =
+        match toolPath with 
+        | Some toolPath -> Path.Combine(toolPath, "svcutil.exe") 
+        | None -> sdkUtil "svcutil.exe"
+        
     let xsdExe () = sdkUtil "xsd.exe"
 
     type FileResource =

@@ -48,7 +48,7 @@ type WsdlServiceTest(serviceUri, prefix, checkHostedType) =
         let hostedType1StaticParameters = typeProvider1.GetStaticParameters(hostedType1)
         check "eenewioinw2" 
             (set [ for i in hostedType1StaticParameters -> i.Name ]) 
-            (set ["ServiceUri"; "LocalSchemaFile"; "ResolutionFolder"; "ForceUpdate"; "Serializable"; "MessageContract"; "EnableDataBinding"; "Async"; "CollectionType"; "Wrapped"])
+            (set ["ServiceUri"; "LocalSchemaFile"; "ResolutionFolder"; "ForceUpdate"; "Serializable"; "MessageContract"; "EnableDataBinding"; "Async"; "CollectionType"; "Wrapped"; "SvcUtilPath"])
 
         let staticParameterValues = 
             [| for x in hostedType1StaticParameters -> 
