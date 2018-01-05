@@ -983,7 +983,7 @@ type public DataProviders(config:TypeProviderConfig) =
         
 
     
-    let wsdlReorg isObsolete namespaceName endpointNames (serviceUri:string, _localSchemaDir, _, _, _, _, _, _, _, _) (types: Type list) = 
+    let wsdlReorg isObsolete namespaceName endpointNames (serviceUri:string, _localSchemaDir, _, _, _, _, _, _, _, _, _) (types: Type list) = 
         /// Make the expression that creates the instance of the underlying full context type stored in the simplified context object.
         /// This function is used when no endpoint name is available (because either none were in the config file, or there was trouble getting
         /// or parsing the context file)
@@ -1110,16 +1110,20 @@ type public DataProviders(config:TypeProviderConfig) =
            (wsdlServiceAssemblyOrPersistentErrorCache, 
 
             // The function used to compute which resources to watch
-            (fun (_serviceUri, localSchemaFile, forceUpdate, resolutionFolderParam, _, _, _, _, _, _) ->
+            (fun (_serviceUri, localSchemaFile, forceUpdate, resolutionFolderParam, _, _, _, _, _, _, _) ->
                 [ // Watch the local schema file for changes and make the filename absolute
                   if not (String.IsNullOrWhiteSpace localSchemaFile) && not forceUpdate then 
                       let absoluteLocalSchemaFile = makeAbsoluteWithResolutionFolder resolutionFolderParam localSchemaFile
                       yield WatchSpec.File absoluteLocalSchemaFile ]), 
-            (fun (_, localSchemaFile, _, resolutionFolderParam, _, _, _, _, _, _) -> Some (makeAbsoluteWithResolutionFolder resolutionFolderParam localSchemaFile)),
+            (fun (_, localSchemaFile, _, resolutionFolderParam, _, _, _, _, _, _, _) -> Some (makeAbsoluteWithResolutionFolder resolutionFolderParam localSchemaFile)),
             // The function used to generate the assembly
-            (fun uniqueName (serviceUri, localSchemaFile, forceUpdate, resolutionFolderParam, messageContract, enableDataBinding, serializable, async, collectionType, wrapped) ->
+            (fun uniqueName (serviceUri, localSchemaFile, forceUpdate, resolutionFolderParam, messageContract, enableDataBinding, serializable, async, collectionType, wrapped, svcUtilPath) ->
                 let absoluteLocalSchemaFile = makeAbsoluteWithResolutionFolder resolutionFolderParam localSchemaFile
-                let assembly, endPointNames = SvcUtil.buildTypeFromWsdlUri (uniqueName, serviceUri, absoluteLocalSchemaFile, forceUpdate,  messageContract, enableDataBinding, serializable, async, collectionType, wrapped)
+                let toolPath = 
+                    if not(String.IsNullOrWhiteSpace(svcUtilPath))
+                    then Some (makeAbsoluteWithResolutionFolder resolutionFolderParam svcUtilPath)
+                    else None
+                let assembly, endPointNames = SvcUtil.buildTypeFromWsdlUri (uniqueName, serviceUri, absoluteLocalSchemaFile, forceUpdate,  messageContract, enableDataBinding, serializable, async, collectionType, wrapped, toolPath)
                 (assembly, endPointNames)),
             wsdlServiceTypeHelp,
             Some wsdlReorg,
@@ -1139,6 +1143,7 @@ type public DataProviders(config:TypeProviderConfig) =
            staticParam("Async",                  typeof<bool>,   Some false)
            staticParam("CollectionType",         typeof<string>, Some "")
            staticParam("Wrapped",                typeof<bool>,   Some false)
+           staticParam("SvcUtilPath",            typeof<string>, Some "")
         |]
 
     let wsdlServiceType (isObsolete, typePath, itemName) = wsdlServiceTypeCache.Apply (isObsolete, typePath, itemName) 
@@ -1295,7 +1300,8 @@ type public DataProviders(config:TypeProviderConfig) =
                                (oneNamedParam (wsdlServiceStaticParameters, "Serializable") : bool),
                                (oneNamedParam (wsdlServiceStaticParameters, "Async") : bool),
                                (oneNamedParam (wsdlServiceStaticParameters, "CollectionType") : string),
-                               (oneNamedParam (wsdlServiceStaticParameters, "Wrapped") : bool)))
+                               (oneNamedParam (wsdlServiceStaticParameters, "Wrapped") : bool),
+                               (oneNamedParam (wsdlServiceStaticParameters, "SvcUtilPath") : string)))
 
             | "ODataService"   -> 
                 odataServiceType 

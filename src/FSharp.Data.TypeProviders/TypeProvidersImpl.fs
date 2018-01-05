@@ -656,7 +656,7 @@ module internal SvcUtil =
         if String.IsNullOrWhiteSpace uri then
             failwith (FSData.SR.invalidWsdlUri())
 
-    let buildTypeFromWsdlUri (namespaceName, wsdlUri : string, localSchemaFile:string, forceUpdate:bool, messageContract, enableDataBinding, serializable, async, collectionType, wrapped) =
+    let buildTypeFromWsdlUri (namespaceName, wsdlUri : string, localSchemaFile:string, forceUpdate:bool, messageContract, enableDataBinding, serializable, async, collectionType, wrapped, toolPath) =
         
         validateWsdlUri wsdlUri
 
@@ -679,7 +679,7 @@ module internal SvcUtil =
                     let args = sprintf "/nologo /t:metadata \"%s\"" wsdlUri 
                     args
         
-                Util.shell(tempFolder.Path, Util.svcUtilExe(), svcUtilArgs, Some formatErr)
+                Util.shell(tempFolder.Path, Util.svcUtilExe(toolPath), svcUtilArgs, Some formatErr)
 
                 if schemaFileSet then
                     packFolder tempFolder.Path localSchemaFile ["*.wsdl"; "*.xsd"]
@@ -711,7 +711,7 @@ module internal SvcUtil =
             let args = if wrapped                                   then sprintf "%s /wrapped"           args else args
             args
         
-        Util.shell(Path.GetTempPath(), Util.svcUtilExe(), svcUtilArgs, Some formatErr)
+        Util.shell(Path.GetTempPath(), Util.svcUtilExe(toolPath), svcUtilArgs, Some formatErr)
         
         let assemblyFile = Util.TemporaryFile "dll" // TODO: load in-memory and clean up this file
         
