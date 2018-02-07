@@ -1,3 +1,6 @@
+### 5.0.0.3-beta
+* Added SvcUtilPath to WSDL Type provider, to limit dependencies on .NET SDK
+
 ### 5.0.0.2
 * First non-beta release
 
