@@ -29,7 +29,8 @@ See also below for a micro example use of the type provider:
 open FSharp.Data.TypeProviders
 
 // The database connection string
-let [<Literal>] CONN = @"AttachDBFileName = 'C:\GitHub\fsprojects\FSharp.Data.TypeProviders\tests\FSharp.Data.TypeProviders.Tests\SqlDataConnection\DB\NORTHWND.MDF';Server='(localdb)\MSSQLLocalDB'"
+let [<Literal>] CONN = 
+    @"AttachDBFileName='C:\DB\NORTHWND.MDF';Server='(localdb)\MSSQLLocalDB'"
 
 // Connect to the database at compile-time
 type SqlData1 = SqlDataConnection<CONN>
