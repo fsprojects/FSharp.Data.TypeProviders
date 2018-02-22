@@ -14,8 +14,8 @@ open System.Collections.Generic
 open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
-open Internal.Utilities.TypeProvider.Emit
 open FSharp.Data.TypeProviders.Utility
+open ProviderImplementation.ProvidedTypes
 
 // This is how the compiler decides the assembly has a type which extend the compiler.
 [<assembly:TypeProviderAssembly>]
@@ -327,7 +327,7 @@ type public DataProviders(config:TypeProviderConfig) =
         Util.MemoizationTable<bool * string list * 'ConfigInfo, Type>(fun (isObsolete, typePath, itemSpec) -> 
             let uniqueName = getUniqueName itemSpec
             let typeName = List.nth typePath (List.length typePath - 1)
-            let t = ProvidedTypeDefinition(theAssembly, uniqueName, typeName, baseType = Some typeof<obj>, IsErased=false)
+            let t = ProvidedTypeDefinition(theAssembly, uniqueName, typeName, baseType = Some typeof<obj>, isErased=false)
             t.AddXmlDocDelayed (fun () -> xmlDocHelp())
 
             if suppressTypeRelocation then 
@@ -372,7 +372,7 @@ type public DataProviders(config:TypeProviderConfig) =
                 |> bucketByPath
                     (fun namespaceComponent -> namespaceComponent)
                     (fun namespaceComponent typesUnderNamespaceComponent -> 
-                        let t = ProvidedTypeDefinition(namespaceComponent, baseType = Some typeof<obj>, IsErased=false)
+                        let t = ProvidedTypeDefinition(namespaceComponent, baseType = Some typeof<obj>, isErased=false)
                         //match help with None -> () | Some f -> t.AddXmlDocDelayed f
                         t.AddMembers (loop typesUnderNamespaceComponent)
                         (t :> Type))
@@ -422,7 +422,7 @@ type public DataProviders(config:TypeProviderConfig) =
         //let contextBaseTypeShortName = dataContextTypeName.Split '.' |> Seq.last
 
         let simpleContextTypesContainer = 
-            let t = ProvidedTypeDefinition("SimpleDataContextTypes", baseType = Some typeof<obj>, IsErased=false)
+            let t = ProvidedTypeDefinition("SimpleDataContextTypes", baseType = Some typeof<obj>, isErased=false)
             t.AddXmlDocDelayed (fun () -> (FSData.SR.xmlDocContainsTheSimplifiedContextTypes(serviceKind)))
             t
 
@@ -431,7 +431,7 @@ type public DataProviders(config:TypeProviderConfig) =
                  let xmlHelpMaker = if propertiesToKeep.ContainsKey "Credentials" then FSData.SR.xmlDocFullServiceTypesAPI else FSData.SR.xmlDocFullServiceTypesAPINoCredentials
                  xmlHelpMaker(serviceKind,(String.concat ", " (contextTypes |> List.map (fun t -> "'"+t.Name+"'")))))
             //[ for (namespacePath, ty) in types -> (("ServiceTypes",help) :: namespacePath, ty) ] 
-            let t = ProvidedTypeDefinition("ServiceTypes", baseType = Some typeof<obj>, IsErased=false)
+            let t = ProvidedTypeDefinition("ServiceTypes", baseType = Some typeof<obj>, isErased=false)
             t.AddXmlDocDelayed help
             t.AddMembers types
             t.AddMember simpleContextTypesContainer
@@ -441,20 +441,19 @@ type public DataProviders(config:TypeProviderConfig) =
             [ for fullContextType in contextTypes do 
                   let storedContextType, revealedContextType, staticMethodsForContextType = getInfoOnContextType fullContextType 
                   let simpleContextType, simpleContextTypeCtor = 
-                      let t = ProvidedTypeDefinition(fullContextType.Name, baseType = Some typeof<obj>, IsErased=false)
+                      let t = ProvidedTypeDefinition(fullContextType.Name, baseType = Some typeof<obj>, isErased=false, hideObjectMethods=true)
                       t.AddXmlDocDelayed (fun () -> (FSData.SR.xmlDocSimplifiedDataContext(serviceKind)))
-                      t.HideObjectMethods <- true
                       // Generated provided types made using TypeProviderEmit can have one constructor, which implies the fields of the constructed type instance
                       let ctor = 
                           let code (_args: Expr list) = Expr.Value "unused" // For generated types, the constructor code is ignored.
-                          let p = ProvidedConstructor([ ProvidedParameter("context", storedContextType) ], InvokeCode=code) 
+                          let p = ProvidedConstructor([ ProvidedParameter("context", storedContextType) ], invokeCode=code) 
                           p.AddXmlDocDelayed (fun () -> (FSData.SR.xmlDocConstructSimplifiedContext(serviceKind)))
                           p
                       if contextTypeImplementsIDisposable then 
                           let idisposeMeth = typeof<System.IDisposable>.GetMethod "Dispose"
                           let dispose = 
                               let code (_args: Expr list) = Expr.Call(Expr.Coerce( Expr.Var(Var.Global("context", storedContextType)), typeof<System.IDisposable>), idisposeMeth, [ ])
-                              let m = ProvidedMethod("Dispose", [ ], typeof<System.Void>, InvokeCode=code) 
+                              let m = ProvidedMethod("Dispose", [ ], typeof<System.Void>, invokeCode=code) 
                               m.SetMethodAttrs(MethodAttributes.Virtual ||| MethodAttributes.HasSecurity ||| MethodAttributes.Final ||| MethodAttributes.NewSlot ||| MethodAttributes.Private)
                               m.AddXmlDocDelayed (fun () -> (FSData.SR.xmlDocDisposeSimplifiedContext()))
                               m
@@ -465,7 +464,7 @@ type public DataProviders(config:TypeProviderConfig) =
                       t.AddMember ctor 
                       let dataContextProperty = 
                           let code (_args: Expr list) = Expr.Coerce(Expr.Var(Var.Global("context", storedContextType)), revealedContextType)
-                          let p = ProvidedProperty("DataContext", revealedContextType, GetterCode= code, IsStatic=false) 
+                          let p = ProvidedProperty("DataContext", revealedContextType, getterCode= code, isStatic=false) 
                           p.AddXmlDocDelayed (fun () -> (FSData.SR.xmlDocGetFullContext(serviceKind)))
                           p
                       t.AddMember dataContextProperty 
@@ -474,13 +473,13 @@ type public DataProviders(config:TypeProviderConfig) =
                           for serviceTypeMethod in storedContextType.GetMethods(BindingFlags.DeclaredOnly ||| BindingFlags.Instance ||| BindingFlags.Public) do 
                               if keepMethod serviceTypeMethod then 
                                   let delegatingMethod = 
-                                      let code (args: Quotations.Expr[]) = 
+                                      let code (args: Quotations.Expr list) = 
                                           let obj = Quotations.Expr.Call(args.[0],dataContextProperty.GetGetMethod(),[ ])
                                           let objCoerced = Quotations.Expr.Coerce(obj,storedContextType) 
-                                          Quotations.Expr.Call(objCoerced,serviceTypeMethod,Array.toList args.[1..]) // only instance methods
+                                          Quotations.Expr.Call(objCoerced,serviceTypeMethod,List.tail args) // only instance methods
                                       let parameters = [ for p in serviceTypeMethod.GetParameters() -> ProvidedParameter(p.Name, p.ParameterType, isOut=p.IsOut) ]
 
-                                      let m = ProvidedMethod(serviceTypeMethod.Name, parameters, serviceTypeMethod.ReturnType , InvokeCodeInternal = code, IsStaticMethod=false) 
+                                      let m = ProvidedMethod(serviceTypeMethod.Name, parameters, serviceTypeMethod.ReturnType , invokeCode = code, isStatic=false) 
                                       m.AddXmlDocDelayed (fun () -> (FSData.SR.xmlDocExecuteProcedure(m.Name)))
                                       m
                                   yield (delegatingMethod :> MemberInfo)
@@ -492,7 +491,7 @@ type public DataProviders(config:TypeProviderConfig) =
                                           let obj = Expr.Call(args.[0],dataContextProperty.GetGetMethod(),[])
                                           let objCoerced = Expr.Coerce(obj,storedContextType)
                                           Expr.PropertyGet(objCoerced,serviceTypeProperty,[])  // only instance properties
-                                      let p = ProvidedProperty(serviceTypeProperty.Name, serviceTypeProperty.PropertyType , GetterCode= code, IsStatic=false) 
+                                      let p = ProvidedProperty(serviceTypeProperty.Name, serviceTypeProperty.PropertyType , getterCode= code, isStatic=false) 
                                       p.AddXmlDocDelayed (fun () -> (FSData.SR.xmlDocGetEntities(p.Name,serviceKind)))
                                       p
                                   yield (delegatingProperty :> MemberInfo)
@@ -500,9 +499,14 @@ type public DataProviders(config:TypeProviderConfig) =
                           for serviceTypeProperty in fullContextType.GetProperties(BindingFlags.Instance ||| BindingFlags.Public) do 
                               if propertiesToKeep.ContainsKey serviceTypeProperty.Name then 
                                   let keptProperty = 
-                                      let p = ProvidedProperty(serviceTypeProperty.Name, serviceTypeProperty.PropertyType, IsStatic=false) 
-                                      if serviceTypeProperty.CanRead then p.GetterCode <- (fun (args: Expr list) -> Expr.PropertyGet(Expr.Coerce(Expr.Call(args.[0],dataContextProperty.GetGetMethod(),[]),fullContextType),serviceTypeProperty,[])) 
-                                      if serviceTypeProperty.CanWrite then p.SetterCode <- (fun (args: Expr list) -> Expr.PropertySet(Expr.Coerce(Expr.Call(args.[0],dataContextProperty.GetGetMethod(),[]),fullContextType),serviceTypeProperty,args.[1],[])) 
+                                      let getterCode = fun (args: Expr list) -> Expr.PropertyGet(Expr.Coerce(Expr.Call(args.[0],dataContextProperty.GetGetMethod(),[]),fullContextType),serviceTypeProperty,[])
+                                      let setterCode = fun (args: Expr list) -> Expr.PropertySet(Expr.Coerce(Expr.Call(args.[0],dataContextProperty.GetGetMethod(),[]),fullContextType),serviceTypeProperty,args.[1],[])
+                                      let p =
+                                          match serviceTypeProperty.CanRead, serviceTypeProperty.CanWrite with
+                                          | true, true -> ProvidedProperty(serviceTypeProperty.Name, serviceTypeProperty.PropertyType, isStatic=false, getterCode=getterCode, setterCode=setterCode)
+                                          | true, false -> ProvidedProperty(serviceTypeProperty.Name, serviceTypeProperty.PropertyType, isStatic=false, getterCode=getterCode)
+                                          | false, true -> ProvidedProperty(serviceTypeProperty.Name, serviceTypeProperty.PropertyType, isStatic=false, setterCode=setterCode)
+                                          | false, false -> ProvidedProperty(serviceTypeProperty.Name, serviceTypeProperty.PropertyType, isStatic=false)
                                       p.AddXmlDocDelayed (fun () -> propertiesToKeep.[p.Name])
                                       p
                                   yield (keptProperty :> MemberInfo) ]
@@ -519,7 +523,7 @@ type public DataProviders(config:TypeProviderConfig) =
                   for (methodName, argDescriptions, contextArgCode) in infoOnStaticMethods do // e.g. NetflixCatalog
                           let getContextMethod = 
                               let code args = Expr.NewObject(simpleContextTypeCtor, [ contextArgCode args ])
-                              let p = ProvidedMethod(methodName, [ for (argName,argTy) in argDescriptions -> ProvidedParameter(argName, argTy)  ], simpleContextType, InvokeCode= code, IsStaticMethod=true)
+                              let p = ProvidedMethod(methodName, [ for (argName,argTy) in argDescriptions -> ProvidedParameter(argName, argTy)  ], simpleContextType, invokeCode= code, isStatic=true)
                               if isObsolete then
                                   p.AddObsoleteAttribute(obsoleteMsg, isError=true)
 
@@ -537,7 +541,7 @@ type public DataProviders(config:TypeProviderConfig) =
 
     /// Define a provided type with the given name, type, default value and xml documentation
     let typeDefinition (nsp, nm, xml) = 
-        let p = ProvidedTypeDefinition(theAssembly, nsp, nm, baseType = Some typeof<obj>, IsErased=false)
+        let p = ProvidedTypeDefinition(theAssembly, nsp, nm, baseType = Some typeof<obj>, isErased=false)
         p.AddXmlDocDelayed xml
         p
 
@@ -1318,9 +1322,9 @@ type public DataProviders(config:TypeProviderConfig) =
         member __.GetInvokerExpression(mbase, parameters) = 
             match mbase with
             | :? ProvidedMethod as m when (match mbase.DeclaringType with :? ProvidedTypeDefinition as pt -> pt.IsErased | _ -> true) -> 
-                m.InvokeCodeInternal parameters
+                m.GetInvokeCode (List.ofArray parameters)
             | :? ProvidedConstructor as m when (match mbase.DeclaringType with :? ProvidedTypeDefinition as pt -> pt.IsErased | _ -> true) -> 
-                m.InvokeCodeInternal parameters
+                m.GetInvokeCode (List.ofArray parameters)
             // These are the standard for generated types
             | :?  ConstructorInfo as cinfo ->  
                 Quotations.Expr.NewObject(cinfo, Array.toList parameters) 
