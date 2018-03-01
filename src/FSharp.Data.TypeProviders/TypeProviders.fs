@@ -217,7 +217,8 @@ type public DataProviders(config:TypeProviderConfig) =
             let baseDirectoryExpr = mkDefaultRuntimeResolutionFolderExpr resolutionFolderParam
             Expr.Call(typeof<System.IO.Path>.GetMethod("Combine",[| typeof<string>; typeof<string> |]), [ baseDirectoryExpr; Expr.Value staticFileName ])
 
-    let theAssembly = typeof<DataProviders>.Assembly
+    // let dataProvidersAssembly = typeof<DataProviders>.Assembly
+    let theAssembly = ProvidedAssembly()
     let namespaceName = "FSharp.Data.TypeProviders"
     let namespaceNameObsolete = "Microsoft.FSharp.Data.TypeProviders"
 
@@ -327,7 +328,7 @@ type public DataProviders(config:TypeProviderConfig) =
         Util.MemoizationTable<bool * string list * 'ConfigInfo, Type>(fun (isObsolete, typePath, itemSpec) -> 
             let uniqueName = getUniqueName itemSpec
             let typeName = List.nth typePath (List.length typePath - 1)
-            let t = ProvidedTypeDefinition(theAssembly, uniqueName, typeName, baseType = Some typeof<obj>, isErased=false)
+            let t = ProvidedTypeDefinition(theAssembly, uniqueName, typeName, baseType = Some typeof<obj>, isErased=false, hideObjectMethods=true)
             t.AddXmlDocDelayed (fun () -> xmlDocHelp())
 
             if suppressTypeRelocation then 
@@ -372,7 +373,7 @@ type public DataProviders(config:TypeProviderConfig) =
                 |> bucketByPath
                     (fun namespaceComponent -> namespaceComponent)
                     (fun namespaceComponent typesUnderNamespaceComponent -> 
-                        let t = ProvidedTypeDefinition(namespaceComponent, baseType = Some typeof<obj>, isErased=false)
+                        let t = ProvidedTypeDefinition(theAssembly, namespaceComponent, typeName, baseType = Some typeof<obj>, isErased=false)
                         //match help with None -> () | Some f -> t.AddXmlDocDelayed f
                         t.AddMembers (loop typesUnderNamespaceComponent)
                         (t :> Type))
@@ -386,8 +387,8 @@ type public DataProviders(config:TypeProviderConfig) =
 
             t.AddMembers assemblyTypesReorganized
             t.AddMembers otherMembersAfterReorg
-            let simplifyingAssemblyFile = Util.TemporaryFile "dll"
-            t.ConvertToGenerated (simplifyingAssemblyFile.Path, (fun (assembly2,providedAssemblyRepr2) -> assemblyBytesTable.Add(assembly2, providedAssemblyRepr2)))
+            //let simplifyingAssemblyFile = Util.TemporaryFile "dll"
+            //t.ConvertToGenerated (simplifyingAssemblyFile.Path, (fun (assembly2,providedAssemblyRepr2) -> assemblyBytesTable.Add(assembly2, providedAssemblyRepr2)))
             (t :> Type))
 
     /// Reorganize an SQLMetal, EntityFramework, OData or WSDL set of generated types, hiding the "complex" generated API under "Types"
@@ -422,7 +423,7 @@ type public DataProviders(config:TypeProviderConfig) =
         //let contextBaseTypeShortName = dataContextTypeName.Split '.' |> Seq.last
 
         let simpleContextTypesContainer = 
-            let t = ProvidedTypeDefinition("SimpleDataContextTypes", baseType = Some typeof<obj>, isErased=false)
+            let t = ProvidedTypeDefinition(theAssembly, namespaceName, "SimpleDataContextTypes", baseType = Some typeof<obj>, isErased=false)
             t.AddXmlDocDelayed (fun () -> (FSData.SR.xmlDocContainsTheSimplifiedContextTypes(serviceKind)))
             t
 
@@ -431,7 +432,7 @@ type public DataProviders(config:TypeProviderConfig) =
                  let xmlHelpMaker = if propertiesToKeep.ContainsKey "Credentials" then FSData.SR.xmlDocFullServiceTypesAPI else FSData.SR.xmlDocFullServiceTypesAPINoCredentials
                  xmlHelpMaker(serviceKind,(String.concat ", " (contextTypes |> List.map (fun t -> "'"+t.Name+"'")))))
             //[ for (namespacePath, ty) in types -> (("ServiceTypes",help) :: namespacePath, ty) ] 
-            let t = ProvidedTypeDefinition("ServiceTypes", baseType = Some typeof<obj>, isErased=false)
+            let t = ProvidedTypeDefinition(theAssembly, namespaceName, "ServiceTypes", baseType = Some typeof<obj>, isErased=false)
             t.AddXmlDocDelayed help
             t.AddMembers types
             t.AddMember simpleContextTypesContainer
@@ -441,7 +442,7 @@ type public DataProviders(config:TypeProviderConfig) =
             [ for fullContextType in contextTypes do 
                   let storedContextType, revealedContextType, staticMethodsForContextType = getInfoOnContextType fullContextType 
                   let simpleContextType, simpleContextTypeCtor = 
-                      let t = ProvidedTypeDefinition(fullContextType.Name, baseType = Some typeof<obj>, isErased=false, hideObjectMethods=true)
+                      let t = ProvidedTypeDefinition(theAssembly, namespaceName , fullContextType.Name, baseType = Some typeof<obj>, isErased=false)
                       t.AddXmlDocDelayed (fun () -> (FSData.SR.xmlDocSimplifiedDataContext(serviceKind)))
                       // Generated provided types made using TypeProviderEmit can have one constructor, which implies the fields of the constructed type instance
                       let ctor = 
@@ -540,8 +541,9 @@ type public DataProviders(config:TypeProviderConfig) =
         p
 
     /// Define a provided type with the given name, type, default value and xml documentation
-    let typeDefinition (nsp, nm, xml) = 
-        let p = ProvidedTypeDefinition(theAssembly, nsp, nm, baseType = Some typeof<obj>, isErased=false)
+    let typeDefinition (nsp, className, xml) = 
+        // assmebly literally used to be a plain Assembly and not ProvidedAssembly
+        let p = ProvidedTypeDefinition(theAssembly, nsp, className, baseType = Some typeof<obj>, isErased=false)
         p.AddXmlDocDelayed xml
         p
 
