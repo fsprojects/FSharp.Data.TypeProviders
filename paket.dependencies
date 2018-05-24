@@ -2,9 +2,9 @@ strategy: min
 source https://nuget.org/api/v2
 
 nuget FSharp.Core >= 3.1.2.5 redirects:force, lowest_matching:true
-github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
-github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
-github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypesTesting.fs
 
 group Build
   source https://nuget.org/api/v2

@@ -64,6 +64,8 @@
   <Import Project="..\..\.paket\paket.targets" />
   <ItemGroup>
     <None Include="paket.references" />
+    <Compile Include="CreateProviderConfig.fs">
+    </Compile>
     <Compile Include="EdmxFile\EdmxFileTests.fs">
       <Link>EdmxFileTests.fs</Link>
     </Compile>

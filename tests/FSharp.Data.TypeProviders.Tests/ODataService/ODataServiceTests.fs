@@ -11,6 +11,7 @@ open System
 open System.IO
 open System.Reflection
 open NUnit.Framework
+open ProviderImplementation.ProvidedTypesTesting
 
 [<AutoOpen>]
 module Infrastructure = 
@@ -75,12 +76,7 @@ let instantiateTypeProviderAndCheckOneHostedType(useLocalSchemaFile: string opti
         let assemblyFile = typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
         test "cnlkenkewe" (File.Exists assemblyFile)
 
-        // If/when we care about the "target framework", this mock function will have to be fully implemented
-        let systemRuntimeContainsType s = 
-            Console.WriteLine (sprintf "Call systemRuntimeContainsType(%s) returning dummy value 'true'" s)
-            true
-
-        let tpConfig = new TypeProviderConfig(systemRuntimeContainsType, ResolutionFolder=__SOURCE_DIRECTORY__, RuntimeAssembly=assemblyFile, ReferencedAssemblies=[| |], TemporaryFolder=Path.GetTempPath(), IsInvalidationSupported=false, IsHostedExecution=true)
+        let tpConfig = Testing.MakeSimulatedTypeProviderConfig(resolutionFolder=__SOURCE_DIRECTORY__, runtimeAssembly=assemblyFile, runtimeAssemblyRefs= Targets.DotNet45FSharp41Refs(), isInvalidationSupported=false, isHostedExecution=true)
         use typeProvider1 = (new FSharp.Data.TypeProviders.DesignTime.DataProviders( tpConfig ) :> ITypeProvider)
 
         let invalidateEventCount = ref 0

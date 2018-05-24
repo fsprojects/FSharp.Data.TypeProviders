@@ -12,8 +12,8 @@ open System.Data.Sql
 open System.Data.SqlClient
 open System.Collections.Generic
 open System.Reflection
-open Microsoft.FSharp.Core.CompilerServices
-open Microsoft.FSharp.Quotations
+open FSharp.Core.CompilerServices
+open FSharp.Quotations
 open FSharp.Data.TypeProviders.Utility
 open ProviderImplementation.ProvidedTypes
 
@@ -32,13 +32,13 @@ type internal WatchSpec =
 /// Generate an assembly or cache an error. Do not retry the assembly generation until invalidation occurs.
 type internal AssemblyOrPersistentErrorCache<'Key, 'Value when 'Key : equality>() =
         
-    let cache = new Dictionary<(string list * 'Key), Choice<'Value,exn>>(HashIdentity.Structural) 
-    member this.GetAssembly(typePath, moniker : 'Key, typeBuilder) =
+    let cache = new Dictionary<(string * 'Key), Choice<'Value,exn>>(HashIdentity.Structural) 
+    member this.GetAssembly(typeName, moniker : 'Key, typeBuilder) =
         let res = 
-            match cache.TryGetValue ((typePath,moniker)) with
+            match cache.TryGetValue ((typeName,moniker)) with
             |   false, _ ->
                     let t = try Choice1Of2(typeBuilder()) with err -> Choice2Of2 err
-                    cache.Add((typePath,moniker), t)
+                    cache.Add((typeName,moniker), t)
                     t
             |   true, t -> t
         match res with 
@@ -191,7 +191,10 @@ type internal PathResolutionUtils(baseResolutionFolder) =
 
 [<TypeProvider>]
 /// The implementation of the built-in type providers.
-type public DataProviders(config:TypeProviderConfig) =    
+type public DataProviders(config:TypeProviderConfig) as self =    
+
+    inherit TypeProviderForNamespaces(config)
+
     let pathResolutionUtils = PathResolutionUtils(config.ResolutionFolder)
 
     let makeAbsolute resolutionFolderParam pathName = pathResolutionUtils.MakeAbsolute(resolutionFolderParam, pathName)
@@ -218,7 +221,6 @@ type public DataProviders(config:TypeProviderConfig) =
             Expr.Call(typeof<System.IO.Path>.GetMethod("Combine",[| typeof<string>; typeof<string> |]), [ baseDirectoryExpr; Expr.Value staticFileName ])
 
     // let dataProvidersAssembly = typeof<DataProviders>.Assembly
-    let theAssembly = ProvidedAssembly()
     let namespaceName = "FSharp.Data.TypeProviders"
     let namespaceNameObsolete = "Microsoft.FSharp.Data.TypeProviders"
 
@@ -304,8 +306,6 @@ type public DataProviders(config:TypeProviderConfig) =
 
         tips @ nodes
 
-    let assemblyBytesTable = Dictionary<System.Reflection.Assembly, byte[]>()
-              
     // This major routine creates a lookaside table for generated assemblies based on 
     // particular configuration of one of the assembly generators.
     let containerTypeForGeneratedAssembly 
@@ -325,10 +325,10 @@ type public DataProviders(config:TypeProviderConfig) =
               // Get a unique name to use for generated bits and pieces
               getUniqueName : 'ConfigInfo -> string) =
 
-        Util.MemoizationTable<bool * string list * 'ConfigInfo, Type>(fun (isObsolete, typePath, itemSpec) -> 
+        Util.MemoizationTable<bool * string * 'ConfigInfo, ProvidedTypeDefinition>(fun (isObsolete, typeName, itemSpec) -> 
             let uniqueName = getUniqueName itemSpec
-            let typeName = List.nth typePath (List.length typePath - 1)
-            let t = ProvidedTypeDefinition(theAssembly, uniqueName, typeName, baseType = Some typeof<obj>, isErased=false, hideObjectMethods=true)
+            let theAssemblyFragment = ProvidedAssembly()
+            let t = ProvidedTypeDefinition(theAssemblyFragment, uniqueName, typeName, baseType = Some typeof<obj>, isErased=false, hideObjectMethods=true)
             t.AddXmlDocDelayed (fun () -> xmlDocHelp())
 
             if suppressTypeRelocation then 
@@ -337,12 +337,10 @@ type public DataProviders(config:TypeProviderConfig) =
                 let lockMonikerFileNameOpt = getLockMonikerFileName itemSpec
                 Util.WithExclusiveAccessToFile (defaultArg lockMonikerFileNameOpt null) <| fun () ->               
                     try
-                        assemblyCache.GetAssembly(typePath, itemSpec, (fun () -> 
+                        assemblyCache.GetAssembly(typeName, itemSpec, (fun () -> 
                             let assemblyFile, reorgInfo = generator uniqueName itemSpec
                             try 
-                                let assemblyBytes = File.ReadAllBytes assemblyFile.Path
-                                let assembly = Assembly.Load(assemblyBytes,null,System.Security.SecurityContextSource.CurrentAppDomain)
-                                assemblyBytesTable.Add(assembly, assemblyBytes)
+                                let assembly = self.RegisterGeneratedTargetAssembly (assemblyFile.Path)
                                 assembly, reorgInfo
                             finally
                                 (try File.Delete assemblyFile.Path with _ -> ())
@@ -387,9 +385,8 @@ type public DataProviders(config:TypeProviderConfig) =
 
             t.AddMembers assemblyTypesReorganized
             t.AddMembers otherMembersAfterReorg
-            //let simplifyingAssemblyFile = Util.TemporaryFile "dll"
-            //t.ConvertToGenerated (simplifyingAssemblyFile.Path, (fun (assembly2,providedAssemblyRepr2) -> assemblyBytesTable.Add(assembly2, providedAssemblyRepr2)))
-            (t :> Type))
+            theAssemblyFragment.AddTypes([t])
+            t)
 
     /// Reorganize an SQLMetal, EntityFramework, OData or WSDL set of generated types, hiding the "complex" generated API under "Types"
     /// and presenting a simpler set of types and properties.
@@ -540,11 +537,14 @@ type public DataProviders(config:TypeProviderConfig) =
         let p = ProvidedStaticParameter(nm, ty, ?parameterDefaultValue=Option.map box dflt )
         p
 
+    let theAssemblyForGenerators = typeof<DataProviders>.Assembly
+
     /// Define a provided type with the given name, type, default value and xml documentation
-    let typeDefinition (nsp, nm, xml) = 
+    let typeDefinition (nsp, nm, xml, parameters, applyStaticArguments) = 
         // assmebly literally used to be a plain Assembly and not ProvidedAssembly
-        let p = ProvidedTypeDefinition(theAssembly, nsp, nm, baseType = Some typeof<obj>, isErased=false)
+        let p = ProvidedTypeDefinition(theAssemblyForGenerators, nsp, nm, baseType = Some typeof<obj>, isErased=false)
         p.AddXmlDocDelayed xml
+        p.DefineStaticParameters(Array.toList parameters, applyStaticArguments)
         p
 
 
@@ -1154,20 +1154,97 @@ type public DataProviders(config:TypeProviderConfig) =
 
     let wsdlServiceType (isObsolete, typePath, itemName) = wsdlServiceTypeCache.Apply (isObsolete, typePath, itemName) 
 
-    let wsdlServiceTypeUninstantiated   = typeDefinition(namespaceName, "WsdlService",       wsdlServiceTypeHelp)
-    let odataServiceTypeUninstantiated  = typeDefinition(namespaceName, "ODataService",      odataServiceTypeHelp)
-    let dbmlFileTypeUninstantiated      = typeDefinition(namespaceName, "DbmlFile",          dbmlFileTypeHelp)
-    let edmxFileTypeUninstantiated      = typeDefinition(namespaceName, "EdmxFile",          edmxFileTypeHelp)
-    let sqlEntityConnectionTypeUninstantiated      = typeDefinition(namespaceName, "SqlEntityConnection",  sqlEntityConnectionTypeHelp)
-    let sqlDataConnectionTypeUninstantiated = typeDefinition(namespaceName, "SqlDataConnection", sqlDataConnectionTypeHelp)
+    let oneNamedParam generatorName (staticArguments: obj[]) (paramList:ProvidedStaticParameter[], name) : 'T = 
+        match paramList |> Array.tryFindIndex (fun p -> p.Name = name) with
+        | Some i when (i < staticArguments.Length && staticArguments.[i] :? 'T) -> unbox<'T>(staticArguments.[i])
+        | _ -> failwith (FSData.SR.staticParameterNotFoundForType(name,generatorName))
+
+    let applyStaticArguments isObsolete generatorName typeNameWithArguments (staticArguments: obj[]) =
+        let getParam nm = oneNamedParam generatorName staticArguments nm
+
+        match generatorName with
+        | "EdmxFile" -> 
+            edmxFileType (isObsolete, typeNameWithArguments,
+                            ((getParam (edmxFileStaticParameters, "File") : string),
+                             (getParam (edmxFileStaticParameters, "ResolutionFolder") : string)))  
+        | "SqlEntityConnection" -> 
+            sqlEntityConnectionType 
+                        (isObsolete, typeNameWithArguments,
+                            ((getParam (sqlEntityConnectionStaticParameters, "ConnectionString") : string),
+                             (getParam (sqlEntityConnectionStaticParameters, "ConnectionStringName") : string),
+                             (getParam (sqlEntityConnectionStaticParameters, "ConfigFile") : string),
+                             (getParam (sqlEntityConnectionStaticParameters, "DataDirectory") : string),
+                             (getParam (sqlEntityConnectionStaticParameters, "ResolutionFolder") : string),
+                             (getParam (sqlEntityConnectionStaticParameters, "LocalSchemaFile") : string),
+                             (getParam (sqlEntityConnectionStaticParameters, "Provider") : string),
+                             (getParam (sqlEntityConnectionStaticParameters, "EntityContainer") : string),
+                             (getParam (sqlEntityConnectionStaticParameters, "ForceUpdate") : bool),
+                             (getParam (sqlEntityConnectionStaticParameters, "Pluralize") : bool),
+                             (getParam (sqlEntityConnectionStaticParameters, "SuppressForeignKeyProperties") : bool)))  
+        | "SqlDataConnection" -> 
+            sqlDataConnectionType (isObsolete, typeNameWithArguments,
+                            ((getParam (sqlDataConnectionStaticParameters, "ConnectionString") : string),
+                             (getParam (sqlDataConnectionStaticParameters, "ConnectionStringName") : string),
+                             (getParam (sqlDataConnectionStaticParameters, "ConfigFile") : string),
+                             (getParam (sqlDataConnectionStaticParameters, "DataDirectory") : string),
+                             (getParam (sqlDataConnectionStaticParameters, "ResolutionFolder") : string),
+                             (getParam (sqlDataConnectionStaticParameters, "LocalSchemaFile") : string),
+                             (getParam (sqlDataConnectionStaticParameters, "ForceUpdate") : bool),
+                             (getParam (sqlDataConnectionStaticParameters, "Pluralize") : bool),
+                             (getParam (sqlDataConnectionStaticParameters, "Views") : bool),
+                             (getParam (sqlDataConnectionStaticParameters, "Functions") : bool),
+                             (getParam (sqlDataConnectionStaticParameters, "StoredProcedures") : bool),
+                             (getParam (sqlDataConnectionStaticParameters, "Timeout") : int),
+                             (getParam (sqlDataConnectionStaticParameters, "ContextTypeName") : string),
+                             (getParam (sqlDataConnectionStaticParameters, "Serializable") : bool))) 
+        | "DbmlFile" -> 
+            dbmlFileType (isObsolete, typeNameWithArguments,
+                            ((getParam (dbmlStaticParameters, "File") : string),
+                             (getParam (dbmlStaticParameters, "ResolutionFolder") : string),
+                             (getParam (dbmlStaticParameters, "ContextTypeName") : string),
+                             (getParam (dbmlStaticParameters, "Serializable") : bool)))  
+                              
+        | "WsdlService" -> 
+            wsdlServiceType
+                (isObsolete, typeNameWithArguments,
+                            ((getParam (wsdlServiceStaticParameters, "ServiceUri") : string),
+                             (getParam (wsdlServiceStaticParameters, "LocalSchemaFile") : string),
+                             (getParam (wsdlServiceStaticParameters, "ForceUpdate") : bool),
+                             (getParam (wsdlServiceStaticParameters, "ResolutionFolder") : string),
+                             (getParam (wsdlServiceStaticParameters, "MessageContract") : bool),
+                             (getParam (wsdlServiceStaticParameters, "EnableDataBinding") : bool),
+                             (getParam (wsdlServiceStaticParameters, "Serializable") : bool),
+                             (getParam (wsdlServiceStaticParameters, "Async") : bool),
+                             (getParam (wsdlServiceStaticParameters, "CollectionType") : string),
+                             (getParam (wsdlServiceStaticParameters, "Wrapped") : bool),
+                             (getParam (wsdlServiceStaticParameters, "SvcUtilPath") : string)))
+
+        | "ODataService"   -> 
+            odataServiceType 
+                (isObsolete, typeNameWithArguments,
+                            ((getParam (odataServiceStaticParameters, "ServiceUri") : string),
+                             (getParam (odataServiceStaticParameters, "LocalSchemaFile") : string),
+                             (getParam (odataServiceStaticParameters, "ForceUpdate") : bool),
+                             (getParam (odataServiceStaticParameters, "ResolutionFolder") : string),
+                             (getParam (odataServiceStaticParameters, "DataServiceCollection") : bool))) 
+
+        | _ -> Unchecked.defaultof<_>
 
 
-    let wsdlServiceTypeUninstantiated2   = typeDefinition(namespaceNameObsolete, "WsdlService",       wsdlServiceTypeHelp)
-    let odataServiceTypeUninstantiated2  = typeDefinition(namespaceNameObsolete, "ODataService",      odataServiceTypeHelp)
-    let dbmlFileTypeUninstantiated2      = typeDefinition(namespaceNameObsolete, "DbmlFile",          dbmlFileTypeHelp)
-    let edmxFileTypeUninstantiated2      = typeDefinition(namespaceNameObsolete, "EdmxFile",          edmxFileTypeHelp)
-    let sqlEntityConnectionTypeUninstantiated2      = typeDefinition(namespaceNameObsolete, "SqlEntityConnection",  sqlEntityConnectionTypeHelp)
-    let sqlDataConnectionTypeUninstantiated2 = typeDefinition(namespaceNameObsolete, "SqlDataConnection", sqlDataConnectionTypeHelp)
+    let wsdlServiceTypeUninstantiated   = typeDefinition(namespaceName, "WsdlService",       wsdlServiceTypeHelp, wsdlServiceStaticParameters, applyStaticArguments false "WsdlService")
+    let odataServiceTypeUninstantiated  = typeDefinition(namespaceName, "ODataService",      odataServiceTypeHelp, odataServiceStaticParameters, applyStaticArguments false "ODataService")
+    let dbmlFileTypeUninstantiated      = typeDefinition(namespaceName, "DbmlFile",          dbmlFileTypeHelp, dbmlStaticParameters, applyStaticArguments false "DbmlFile")
+    let edmxFileTypeUninstantiated      = typeDefinition(namespaceName, "EdmxFile",          edmxFileTypeHelp, edmxFileStaticParameters, applyStaticArguments false "EdmxFile")
+    let sqlEntityConnectionTypeUninstantiated = typeDefinition(namespaceName, "SqlEntityConnection",  sqlEntityConnectionTypeHelp, sqlEntityConnectionStaticParameters, applyStaticArguments false "SqlEntityConnection")
+    let sqlDataConnectionTypeUninstantiated = typeDefinition(namespaceName, "SqlDataConnection", sqlDataConnectionTypeHelp, sqlDataConnectionStaticParameters, applyStaticArguments false "SqlDataConnection")
+
+    let wsdlServiceTypeUninstantiated2   = typeDefinition(namespaceName, "WsdlService",       wsdlServiceTypeHelp, wsdlServiceStaticParameters, applyStaticArguments true "WsdlService")
+    let odataServiceTypeUninstantiated2  = typeDefinition(namespaceName, "ODataService",      odataServiceTypeHelp, odataServiceStaticParameters, applyStaticArguments true "ODataService")
+    let dbmlFileTypeUninstantiated2      = typeDefinition(namespaceName, "DbmlFile",          dbmlFileTypeHelp, dbmlStaticParameters, applyStaticArguments true "DbmlFile")
+    let edmxFileTypeUninstantiated2      = typeDefinition(namespaceName, "EdmxFile",          edmxFileTypeHelp, edmxFileStaticParameters, applyStaticArguments true "EdmxFile")
+    let sqlEntityConnectionTypeUninstantiated2 = typeDefinition(namespaceName, "SqlEntityConnection",  sqlEntityConnectionTypeHelp, sqlEntityConnectionStaticParameters, applyStaticArguments true "SqlEntityConnection")
+    let sqlDataConnectionTypeUninstantiated2 = typeDefinition(namespaceName, "SqlDataConnection", sqlDataConnectionTypeHelp, sqlDataConnectionStaticParameters, applyStaticArguments true "SqlDataConnection")
+
     let msg = "Please now reference this type provider via the namespace FSharp.Data.TypeProviders (rather than Microsoft.FSharp.Data.TypeProviders)"
     do wsdlServiceTypeUninstantiated2.AddObsoleteAttribute(msg, isError=true)
     do odataServiceTypeUninstantiated2.AddObsoleteAttribute(msg, isError=true)
@@ -1176,172 +1253,25 @@ type public DataProviders(config:TypeProviderConfig) =
     do sqlEntityConnectionTypeUninstantiated2.AddObsoleteAttribute(msg, isError=true)
     do sqlDataConnectionTypeUninstantiated2.AddObsoleteAttribute(msg, isError=true)
 
-    let pnsp1 = 
-        { new IProvidedNamespace with
-                member this.GetNestedNamespaces() = [| |]
-                member this.NamespaceName = namespaceName
-                member this.GetTypes() = 
-                    [| sqlDataConnectionTypeUninstantiated
-                       edmxFileTypeUninstantiated
-                       sqlEntityConnectionTypeUninstantiated
-                       dbmlFileTypeUninstantiated
-                       odataServiceTypeUninstantiated
-                       wsdlServiceTypeUninstantiated |]
-        
-                member this.ResolveTypeName typeName = 
-                    match typeName with
-                    | "EdmxFile" -> edmxFileTypeUninstantiated :> Type
-                    | "SqlDataConnection" -> sqlDataConnectionTypeUninstantiated :> Type
-                    | "SqlEntityConnection" -> sqlEntityConnectionTypeUninstantiated :> Type
-                    | "DbmlFile" -> dbmlFileTypeUninstantiated :> Type
-                    | "ODataService" -> odataServiceTypeUninstantiated :> Type
-                    | "WsdlService" -> wsdlServiceTypeUninstantiated :> Type
-                    | _ -> null }
-
-    let pnsp2 = 
-        { new IProvidedNamespace with
-                member this.GetNestedNamespaces() = [| |]
-                member this.NamespaceName = namespaceNameObsolete
-                member this.GetTypes() = 
-                    [| sqlDataConnectionTypeUninstantiated2
-                       edmxFileTypeUninstantiated2
-                       sqlEntityConnectionTypeUninstantiated2
-                       dbmlFileTypeUninstantiated2
-                       odataServiceTypeUninstantiated2
-                       wsdlServiceTypeUninstantiated2 |]
-        
-                member this.ResolveTypeName typeName = 
-                    match typeName with
-                    | "EdmxFile" -> edmxFileTypeUninstantiated2 :> Type
-                    | "SqlDataConnection" -> sqlDataConnectionTypeUninstantiated2 :> Type
-                    | "SqlEntityConnection" -> sqlEntityConnectionTypeUninstantiated2 :> Type
-                    | "DbmlFile" -> dbmlFileTypeUninstantiated2 :> Type
-                    | "ODataService" -> odataServiceTypeUninstantiated2 :> Type
-                    | "WsdlService" -> wsdlServiceTypeUninstantiated2 :> Type
-                    | _ -> null }
-
-    interface IDisposable with 
-        member this.Dispose() = 
+    do self.Disposing.Add (fun _ -> 
            let disposers = disposals |> Seq.toList
            disposals.Clear()
-           for disposef in disposers do try disposef() with _ -> ()
+           for disposef in disposers do try disposef() with _ -> ())
 
 
-    interface ITypeProvider with
-
-        member this.GetNamespaces() = [| pnsp1; pnsp2 |] 
+    do self.AddNamespace(namespaceName, 
+                    [ sqlDataConnectionTypeUninstantiated
+                      edmxFileTypeUninstantiated
+                      sqlEntityConnectionTypeUninstantiated
+                      dbmlFileTypeUninstantiated
+                      odataServiceTypeUninstantiated
+                      wsdlServiceTypeUninstantiated ])
         
-        member this.GetStaticParameters(typeWithoutArguments) = 
-            let parameters = 
-                match typeWithoutArguments.Name with
-                | "ODataService"  -> odataServiceStaticParameters
-                | "WsdlService"   -> wsdlServiceStaticParameters 
-                | "SqlDataConnection" -> sqlDataConnectionStaticParameters
-                | "SqlEntityConnection" -> sqlEntityConnectionStaticParameters
-                | "DbmlFile"      -> dbmlStaticParameters
-                | "EdmxFile"      -> edmxFileStaticParameters
-                | _               -> [| |]
-            [| for p in parameters -> p :> System.Reflection.ParameterInfo |]
+    do self.AddNamespace(namespaceNameObsolete, 
+                    [ sqlDataConnectionTypeUninstantiated2
+                      edmxFileTypeUninstantiated2
+                      sqlEntityConnectionTypeUninstantiated2
+                      dbmlFileTypeUninstantiated2
+                      odataServiceTypeUninstantiated2
+                      wsdlServiceTypeUninstantiated2 ])
 
-        member this.ApplyStaticArguments(typeWithoutArguments, typePathWithArguments, staticArguments) =
-
-            let oneNamedParam (paramList:ProvidedStaticParameter[], name) : 'T = 
-                match paramList |> Array.tryFindIndex (fun p -> p.Name = name) with
-                | Some i when (i < staticArguments.Length && staticArguments.[i] :? 'T) -> unbox<'T>(staticArguments.[i])
-                | _ -> failwith (FSData.SR.staticParameterNotFoundForType(name,typeWithoutArguments.Name))
-
-            let typePath = Array.toList typePathWithArguments
-            let isObsolete = (typeWithoutArguments.Namespace = namespaceNameObsolete)
-            match typeWithoutArguments.Name with
-            | "EdmxFile" -> 
-                edmxFileType (isObsolete, typePath,
-                             ((oneNamedParam (edmxFileStaticParameters, "File") : string),
-                              (oneNamedParam (edmxFileStaticParameters, "ResolutionFolder") : string)))  
-            | "SqlEntityConnection" -> 
-                sqlEntityConnectionType 
-                            (isObsolete, typePath,
-                             ((oneNamedParam (sqlEntityConnectionStaticParameters, "ConnectionString") : string),
-                              (oneNamedParam (sqlEntityConnectionStaticParameters, "ConnectionStringName") : string),
-                              (oneNamedParam (sqlEntityConnectionStaticParameters, "ConfigFile") : string),
-                              (oneNamedParam (sqlEntityConnectionStaticParameters, "DataDirectory") : string),
-                              (oneNamedParam (sqlEntityConnectionStaticParameters, "ResolutionFolder") : string),
-                              (oneNamedParam (sqlEntityConnectionStaticParameters, "LocalSchemaFile") : string),
-                              (oneNamedParam (sqlEntityConnectionStaticParameters, "Provider") : string),
-                              (oneNamedParam (sqlEntityConnectionStaticParameters, "EntityContainer") : string),
-                              (oneNamedParam (sqlEntityConnectionStaticParameters, "ForceUpdate") : bool),
-                              (oneNamedParam (sqlEntityConnectionStaticParameters, "Pluralize") : bool),
-                              (oneNamedParam (sqlEntityConnectionStaticParameters, "SuppressForeignKeyProperties") : bool)))  
-            | "SqlDataConnection" -> 
-                sqlDataConnectionType (isObsolete, typePath,
-                             ((oneNamedParam (sqlDataConnectionStaticParameters, "ConnectionString") : string),
-                              (oneNamedParam (sqlDataConnectionStaticParameters, "ConnectionStringName") : string),
-                              (oneNamedParam (sqlDataConnectionStaticParameters, "ConfigFile") : string),
-                              (oneNamedParam (sqlDataConnectionStaticParameters, "DataDirectory") : string),
-                              (oneNamedParam (sqlDataConnectionStaticParameters, "ResolutionFolder") : string),
-                              (oneNamedParam (sqlDataConnectionStaticParameters, "LocalSchemaFile") : string),
-                              (oneNamedParam (sqlDataConnectionStaticParameters, "ForceUpdate") : bool),
-                              (oneNamedParam (sqlDataConnectionStaticParameters, "Pluralize") : bool),
-                              (oneNamedParam (sqlDataConnectionStaticParameters, "Views") : bool),
-                              (oneNamedParam (sqlDataConnectionStaticParameters, "Functions") : bool),
-                              (oneNamedParam (sqlDataConnectionStaticParameters, "StoredProcedures") : bool),
-                              (oneNamedParam (sqlDataConnectionStaticParameters, "Timeout") : int),
-                              (oneNamedParam (sqlDataConnectionStaticParameters, "ContextTypeName") : string),
-                              (oneNamedParam (sqlDataConnectionStaticParameters, "Serializable") : bool))) 
-            | "DbmlFile" -> 
-                dbmlFileType (isObsolete, typePath,
-                             ((oneNamedParam (dbmlStaticParameters, "File") : string),
-                              (oneNamedParam (dbmlStaticParameters, "ResolutionFolder") : string),
-                              (oneNamedParam (dbmlStaticParameters, "ContextTypeName") : string),
-                              (oneNamedParam (dbmlStaticParameters, "Serializable") : bool)))  
-
-            | "WsdlService" -> 
-                wsdlServiceType
-                    (isObsolete, typePath,
-                              ((oneNamedParam (wsdlServiceStaticParameters, "ServiceUri") : string),
-                               (oneNamedParam (wsdlServiceStaticParameters, "LocalSchemaFile") : string),
-                               (oneNamedParam (wsdlServiceStaticParameters, "ForceUpdate") : bool),
-                               (oneNamedParam (wsdlServiceStaticParameters, "ResolutionFolder") : string),
-                               (oneNamedParam (wsdlServiceStaticParameters, "MessageContract") : bool),
-                               (oneNamedParam (wsdlServiceStaticParameters, "EnableDataBinding") : bool),
-                               (oneNamedParam (wsdlServiceStaticParameters, "Serializable") : bool),
-                               (oneNamedParam (wsdlServiceStaticParameters, "Async") : bool),
-                               (oneNamedParam (wsdlServiceStaticParameters, "CollectionType") : string),
-                               (oneNamedParam (wsdlServiceStaticParameters, "Wrapped") : bool),
-                               (oneNamedParam (wsdlServiceStaticParameters, "SvcUtilPath") : string)))
-
-            | "ODataService"   -> 
-                odataServiceType 
-                    (isObsolete, typePath,
-                              ((oneNamedParam (odataServiceStaticParameters, "ServiceUri") : string),
-                               (oneNamedParam (odataServiceStaticParameters, "LocalSchemaFile") : string),
-                               (oneNamedParam (odataServiceStaticParameters, "ForceUpdate") : bool),
-                               (oneNamedParam (odataServiceStaticParameters, "ResolutionFolder") : string),
-                               (oneNamedParam (odataServiceStaticParameters, "DataServiceCollection") : bool))) 
-
-            | _ -> null
-
-
-        member __.GetInvokerExpression(mbase, parameters) = 
-            match mbase with
-            | :? ProvidedMethod as m when (match mbase.DeclaringType with :? ProvidedTypeDefinition as pt -> pt.IsErased | _ -> true) -> 
-                m.GetInvokeCode (List.ofArray parameters)
-            | :? ProvidedConstructor as m when (match mbase.DeclaringType with :? ProvidedTypeDefinition as pt -> pt.IsErased | _ -> true) -> 
-                m.GetInvokeCode (List.ofArray parameters)
-            // These are the standard for generated types
-            | :?  ConstructorInfo as cinfo ->  
-                Quotations.Expr.NewObject(cinfo, Array.toList parameters) 
-            | :? System.Reflection.MethodInfo as minfo ->  
-                if minfo.IsStatic then 
-                    Quotations.Expr.Call(minfo, Array.toList parameters) 
-                else
-                    Quotations.Expr.Call(parameters.[0], minfo, Array.toList parameters.[1..])
-             | _ -> 
-                 System.Diagnostics.Debug.Assert false
-                 failwith (FSData.SR.unexpectedMethodBase())
-
-        [<CLIEvent>]
-        member x.Invalidate = invalidation.Publish
-
-        member x.GetGeneratedAssemblyContents(assembly) = 
-            System.Diagnostics.Debug.Assert(assemblyBytesTable.ContainsKey assembly, "unexpected missing assembly in assemblyBytesTable")
-            assemblyBytesTable.[assembly]
