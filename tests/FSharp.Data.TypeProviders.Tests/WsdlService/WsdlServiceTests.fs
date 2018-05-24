@@ -8,6 +8,7 @@ module FSharp.Data.TypeProviders.Tests.WsdlServiceTests
 open Microsoft.FSharp.Core.CompilerServices
 open System
 open System.IO
+open System.Reflection
 open NUnit.Framework
 
 [<AutoOpen>]
@@ -129,6 +130,7 @@ type SimpleWsdlTest() =
 
         static member Prefix = "simple-"
         static member CheckHostedType(hostedType) = 
+            let bindingAttr = BindingFlags.DeclaredOnly ||| BindingFlags.Public ||| BindingFlags.Instance ||| BindingFlags.Static
             //let hostedType = hostedAppliedType1
             test "09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly)
             test "09wlkm1b" (hostedType.Assembly.FullName.StartsWith "tmp")
@@ -136,26 +138,28 @@ type SimpleWsdlTest() =
             check "09wlkm2" hostedType.DeclaringType null
             check "09wlkm3" hostedType.DeclaringMethod null
             check "09wlkm4" hostedType.FullName "WsdlService1.WsdlServiceApplied"
-            check "09wlkm5" (hostedType.GetConstructors()) [| |]
-            check "09wlkm6" (hostedType.GetCustomAttributesData().Count) 1
-            check "09wlkm6" (hostedType.GetCustomAttributesData().[0].Constructor.DeclaringType.FullName) typeof<TypeProviderXmlDocAttribute>.FullName
-            check "09wlkm7" (hostedType.GetEvents()) [| |]
-            check "09wlkm8" (hostedType.GetFields()) [| |]
-            check "09wlkm9" (hostedType.GetMethods() |> Array.map (fun m -> m.Name)) [| "GetBasicHttpBinding_LanguageService"; "GetBasicHttpBinding_LanguageService"|]   
-            check "09wlkm10" (hostedType.GetProperties()) [| |]
+            check "09wlkm5" (hostedType.GetConstructors(bindingAttr)) [| |]
+            let hostedTypeCustomAttrs = hostedType.GetCustomAttributesData()
+            check "09wlkm6" (hostedTypeCustomAttrs.Count) 2
+            check "ceklc09wlkm6b2" (hostedTypeCustomAttrs.[0].Constructor.DeclaringType.Name) typeof<TypeProviderEditorHideMethodsAttribute>.Name
+            check "ceklc09wlkm6b3" (hostedTypeCustomAttrs.[1].Constructor.DeclaringType.Name) typeof<TypeProviderXmlDocAttribute>.Name
+            check "09wlkm7" (hostedType.GetEvents(bindingAttr)) [| |]
+            check "09wlkm8" (hostedType.GetFields(bindingAttr)) [| |]
+            check "09wlkm9" (hostedType.GetMethods(bindingAttr) |> Array.map (fun m -> m.Name)) [| "GetBasicHttpBinding_LanguageService"; "GetBasicHttpBinding_LanguageService"|]   
+            check "09wlkm10" (hostedType.GetProperties(bindingAttr)) [| |]
             check "09wlkm11" 
-                (set [ for x in hostedType.GetNestedTypes() -> x.Name ]) 
+                (set [ for x in hostedType.GetNestedTypes(bindingAttr) -> x.Name ]) 
                 (set ["ServiceTypes"]   )
 
-            let serviceTypes = hostedType.GetNestedTypes().[0]
+            let serviceTypes = hostedType.GetNestedTypes(bindingAttr).[0]
 
-            check "09wlkm11" (serviceTypes.GetNestedTypes().Length) 5
+            check "09wlkm11" (serviceTypes.GetNestedTypes(bindingAttr).Length) 5
             check "09wlkm12" 
-                (set [ for x in serviceTypes.GetNestedTypes() -> x.Name ]) 
+                (set [ for x in serviceTypes.GetNestedTypes(bindingAttr) -> x.Name ]) 
                 (set ["LanguageService"; "LanguageServiceChannel"; "LanguageServiceClient"; "Microsoft"; "SimpleDataContextTypes" ]   )
 
-            let languageServiceType = (serviceTypes.GetNestedTypes() |> Seq.find (fun t -> t.Name = "LanguageService"))
-            check "09wlkm13"  (languageServiceType.GetProperties().Length) 0
+            let languageServiceType = (serviceTypes.GetNestedTypes(bindingAttr) |> Seq.find (fun t -> t.Name = "LanguageService"))
+            check "09wlkm13"  (languageServiceType.GetProperties(bindingAttr).Length) 0
     
 
 type XIgniteWsdlTest() = 
@@ -167,30 +171,35 @@ type XIgniteWsdlTest() =
         static member Prefix = "xignite-"
 
         static member CheckHostedType (hostedType: System.Type) = 
+            let bindingAttr = BindingFlags.DeclaredOnly ||| BindingFlags.Public ||| BindingFlags.Instance ||| BindingFlags.Static
             test "09wlkm1ad233" (hostedType.Assembly <> typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly)
             test "09wlkm1b2ed1" (hostedType.Assembly.FullName.StartsWith "tmp")
 
             check "09wlkm2" hostedType.DeclaringType null
             check "09wlkm3" hostedType.DeclaringMethod null
             check "09wlkm4" hostedType.FullName "WsdlService1.WsdlServiceApplied"
-            check "09wlkm5" (hostedType.GetConstructors()) [| |]
-            check "09wlkm6" (hostedType.GetCustomAttributesData().Count) 1
-            check "09wlkm6" (hostedType.GetCustomAttributesData().[0].Constructor.DeclaringType.FullName) typeof<TypeProviderXmlDocAttribute>.FullName
-            check "09wlkm7" (hostedType.GetEvents()) [| |]
-            check "09wlkm8" (hostedType.GetFields()) [| |]
-            check "09wlkm9" (hostedType.GetMethods() |> Array.map (fun m -> m.Name)) [| "GetXigniteFuturesSoap"; "GetXigniteFuturesSoap"; "GetXigniteFuturesSoap12";"GetXigniteFuturesSoap12"|]   
-            check "09wlkm10" (hostedType.GetProperties()) [| |]
+            check "09wlkm5" (hostedType.GetConstructors(bindingAttr)) [| |]
+            let hostedTypeCustomAttrs = hostedType.GetCustomAttributesData()
+            check "09wlkm6" (hostedTypeCustomAttrs.Count) 2
+            check "ceklc09wlkm6b2" (hostedTypeCustomAttrs.[0].Constructor.DeclaringType.Name) typeof<TypeProviderEditorHideMethodsAttribute>.Name
+            check "ceklc09wlkm6b3" (hostedTypeCustomAttrs.[1].Constructor.DeclaringType.Name) typeof<TypeProviderXmlDocAttribute>.Name
+            check "09wlkm7" (hostedType.GetEvents(bindingAttr)) [| |]
+            check "09wlkm8" (hostedType.GetFields(bindingAttr)) [| |]
+            check "09wlkm9" (hostedType.GetMethods(bindingAttr) |> Array.map (fun m -> m.Name)) [| "GetXigniteFuturesSoap"; "GetXigniteFuturesSoap"; "GetXigniteFuturesSoap12";"GetXigniteFuturesSoap12"|]   
+            check "09wlkm10" (hostedType.GetProperties(bindingAttr)) [| |]
 
-            let serviceTypes = hostedType.GetNestedTypes().[0]
+            let serviceTypes = hostedType.GetNestedTypes(bindingAttr).[0]
 
 
-            check "09wlkm11a" (serviceTypes.GetNestedTypes().Length >= 1) true
-            check "09wlkm11b" (serviceTypes.GetNestedType("www") <> null) true
-            check "09wlkm11c" (serviceTypes.GetNestedType("www").GetNestedType("xignite") <> null) true
-            check "09wlkm11d" (serviceTypes.GetNestedType("www").GetNestedType("xignite").GetNestedType("com") <> null) true
-            check "09wlkm11e" (serviceTypes.GetNestedType("www").GetNestedType("xignite").GetNestedType("com").GetNestedType("services") <> null) true
-            check "09wlkm11f" (serviceTypes.GetNestedType("www").GetNestedType("xignite").GetNestedType("com").GetNestedType("services").GetNestedTypes().Length >= 1) true
-            check "09wlkm11g" [ for x in serviceTypes.GetNestedTypes() do if not x.IsNested && x.Namespace = null then yield x.Name ].Length 175
+            let serviceTypesNestedTypes = serviceTypes.GetNestedTypes(bindingAttr)
+            check "09wlkm11a" (serviceTypesNestedTypes.Length >= 1) true
+            let wwwType = serviceTypes.GetNestedType("www")
+            check "09wlkm11b" (wwwType <> null) true
+            check "09wlkm11c" (wwwType.GetNestedType("xignite") <> null) true
+            check "09wlkm11d" (wwwType.GetNestedType("xignite").GetNestedType("com") <> null) true
+            check "09wlkm11e" (wwwType.GetNestedType("xignite").GetNestedType("com").GetNestedType("services") <> null) true
+            check "09wlkm11f" (wwwType.GetNestedType("xignite").GetNestedType("com").GetNestedType("services").GetNestedTypes(bindingAttr).Length >= 1) true
+            check "09wlkm11g" [ for x in serviceTypes.GetNestedTypes(bindingAttr) do if not x.IsNested && x.Namespace = null then yield x.Name ].Length 175
 
 
 [<Test; Category("WsdlService")>]

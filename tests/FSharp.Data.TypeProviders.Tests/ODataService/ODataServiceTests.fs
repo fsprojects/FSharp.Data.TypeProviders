@@ -9,6 +9,7 @@ module FSharp.Data.TypeProviders.Tests.OdataServiceTests
 open Microsoft.FSharp.Core.CompilerServices
 open System
 open System.IO
+open System.Reflection
 open NUnit.Framework
 
 [<AutoOpen>]
@@ -18,6 +19,7 @@ module Infrastructure =
     let check s v1 v2 = stderr.Write(s:string);  if v1 = v2 then stderr.WriteLine " OK" else Assert.Fail(sprintf "... FAILURE: expected %A, got %A  " v2 v1)
 
 let checkHostedType (hostedType: System.Type) = 
+        let bindingAttr = BindingFlags.DeclaredOnly ||| BindingFlags.Public ||| BindingFlags.Instance ||| BindingFlags.Static
         //let hostedType = hostedAppliedType1
         test "ceklc09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly)
         test "ceklc09wlkm1b" (hostedType.Assembly.FullName.StartsWith "tmp")
@@ -25,45 +27,46 @@ let checkHostedType (hostedType: System.Type) =
         check "ceklc09wlkm2" hostedType.DeclaringType null
         check "ceklc09wlkm3" hostedType.DeclaringMethod null
         check "ceklc09wlkm4" hostedType.FullName "FSharp.Data.TypeProviders.ODataServiceApplied"
-        check "ceklc09wlkm5" (hostedType.GetConstructors()) [| |]
-        check "ceklc09wlkm6" (hostedType.GetCustomAttributesData().Count) 1
-        check "ceklc09wlkm6" (hostedType.GetCustomAttributesData().[0].Constructor.DeclaringType.FullName) typeof<TypeProviderXmlDocAttribute>.FullName
-        check "ceklc09wlkm7" (hostedType.GetEvents()) [| |]
-        check "ceklc09wlkm8" (hostedType.GetFields()) [| |]
-        check "ceklc09wlkm9" [ for m in hostedType.GetMethods() -> m.Name ] [ "GetDataContext" ; "GetDataContext" ]
-        let m1 = hostedType.GetMethods().[0]
-        let m2 = hostedType.GetMethods().[1]
+        check "ceklc09wlkm5" (hostedType.GetConstructors(bindingAttr)) [| |]
+        check "ceklc09wlkm6b1" (hostedType.GetCustomAttributesData().Count) 2
+        check "ceklc09wlkm6b2" (hostedType.GetCustomAttributesData().[0].Constructor.DeclaringType.Name) typeof<TypeProviderEditorHideMethodsAttribute>.Name
+        check "ceklc09wlkm6b3" (hostedType.GetCustomAttributesData().[1].Constructor.DeclaringType.Name) typeof<TypeProviderXmlDocAttribute>.Name
+        check "ceklc09wlkm7" (hostedType.GetEvents(bindingAttr)) [| |]
+        check "ceklc09wlkm8" (hostedType.GetFields(bindingAttr)) [| |]
+        check "ceklc09wlkm9" [ for m in hostedType.GetMethods(bindingAttr) -> m.Name ] [ "GetDataContext" ; "GetDataContext" ]
+        let m1 = hostedType.GetMethods(bindingAttr).[0]
+        let m2 = hostedType.GetMethods(bindingAttr).[1]
         check "ceklc09wlkm9b" (m1.GetParameters().Length) 0
         check "ceklc09wlkm9b" (m2.GetParameters().Length) 1
         check "ceklc09wlkm9b" (m1.ReturnType.Name) "DemoService"
         check "ceklc09wlkm9c" (m1.ReturnType.FullName) ("FSharp.Data.TypeProviders.ODataServiceApplied+ServiceTypes+SimpleDataContextTypes+DemoService")
 
-        check "ceklc09wlkm9d"  (m1.ReturnType.GetProperties().Length) 5
-        check "ceklc09wlkm9e"  (set [ for p in m1.ReturnType.GetProperties() -> p.Name ]) (set ["Categories"; "Credentials"; "DataContext"; "Products"; "Suppliers"]) 
-        check "ceklc09wlkm9f"  (set [ for p in m1.ReturnType.GetProperties() -> p.PropertyType.Name ]) (set ["DataServiceQuery`1"; "DataServiceQuery`1";"DataServiceQuery`1";"ICredentials"; "DataServiceContext"])
+        check "ceklc09wlkm9d"  (m1.ReturnType.GetProperties(bindingAttr).Length) 5
+        check "ceklc09wlkm9e"  (set [ for p in m1.ReturnType.GetProperties(bindingAttr) -> p.Name ]) (set ["Categories"; "Credentials"; "DataContext"; "Products"; "Suppliers"]) 
+        check "ceklc09wlkm9f"  (set [ for p in m1.ReturnType.GetProperties(bindingAttr) -> p.PropertyType.Name ]) (set ["DataServiceQuery`1"; "DataServiceQuery`1";"DataServiceQuery`1";"ICredentials"; "DataServiceContext"])
         
         // We expose some getters and 1 setter on the simpler data context
-        check "ceklc09wlkm9g"  (m1.ReturnType.GetMethods().Length) 6
-        check "ceklc09wlkm9h" (set [ for p in m1.ReturnType.GetMethods() -> p.Name ]) (set ["get_Categories"; "get_Credentials"; "get_DataContext"; "get_Products"; "get_Suppliers"; "set_Credentials"])
+        check "ceklc09wlkm9g"  (m1.ReturnType.GetMethods(bindingAttr).Length) 6
+        check "ceklc09wlkm9h" (set [ for p in m1.ReturnType.GetMethods(bindingAttr) -> p.Name ]) (set ["get_Categories"; "get_Credentials"; "get_DataContext"; "get_Products"; "get_Suppliers"; "set_Credentials"])
 
-        check "ceklc09wlkm10" (hostedType.GetProperties()) [| |]
-        check "ceklc09wlkm11" (hostedType.GetNestedTypes().Length) 1
+        check "ceklc09wlkm10" (hostedType.GetProperties(bindingAttr)) [| |]
+        check "ceklc09wlkm11" (hostedType.GetNestedTypes(bindingAttr).Length) 1
         check "ceklc09wlkm12" 
-            (set [ for x in hostedType.GetNestedTypes() -> x.Name ]) 
+            (set [ for x in hostedType.GetNestedTypes(bindingAttr) -> x.Name ]) 
             (set ["ServiceTypes"])
 
-        let hostedServiceTypes = hostedType.GetNestedTypes().[0]
+        let hostedServiceTypes = hostedType.GetNestedTypes(bindingAttr).[0]
 
-        check "ceklc09wlkm11" (hostedServiceTypes.GetNestedTypes().Length) 6
+        check "ceklc09wlkm11" (hostedServiceTypes.GetNestedTypes(bindingAttr).Length) 6
         check "ceklc09wlkm12" 
-            (set [ for x in hostedServiceTypes.GetNestedTypes() -> x.Name ]) 
+            (set [ for x in hostedServiceTypes.GetNestedTypes(bindingAttr) -> x.Name ]) 
             (set ["Address"; "Category"; "DemoService"; "Product"; "SimpleDataContextTypes"; "Supplier"])
 
-        let productType = (hostedServiceTypes.GetNestedTypes() |> Seq.find (fun t -> t.Name = "Product"))
-        check "ceklc09wlkm13"  (productType.GetProperties().Length) 9
+        let productType = (hostedServiceTypes.GetNestedTypes(bindingAttr) |> Seq.find (fun t -> t.Name = "Product"))
+        check "ceklc09wlkm13"  (productType.GetProperties(bindingAttr).Length) 9
 
         check "ceklc09wlkm14" 
-            (set [ for x in productType.GetProperties() -> x.Name ]) 
+            (set [ for x in productType.GetProperties(bindingAttr) -> x.Name ]) 
             (set ["ID"; "Name"; "Description"; "ReleaseDate"; "DiscontinuedDate"; "Rating"; "Price"; "Category"; "Supplier"])
 
 let instantiateTypeProviderAndCheckOneHostedType(useLocalSchemaFile: string option, useForceUpdate: bool option, typeFullPath:string[]) = 

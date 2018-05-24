@@ -11,6 +11,7 @@ module FSharp.Data.TypeProviders.Tests.SqlDataConnectionTests
 open Microsoft.FSharp.Core.CompilerServices
 open System
 open System.IO
+open System.Reflection
 open NUnit.Framework
 
 [<AutoOpen>]
@@ -38,6 +39,7 @@ let isSQLExpressInstalled =
 
 
 let checkHostedType (hostedType: System.Type) = 
+        let bindingAttr = BindingFlags.DeclaredOnly ||| BindingFlags.Public ||| BindingFlags.Instance ||| BindingFlags.Static
         //let hostedType = hostedAppliedType1
         test "ceklc09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly)
         test "ceklc09wlkm1b" (hostedType.Assembly.FullName.StartsWith "tmp")
@@ -45,37 +47,38 @@ let checkHostedType (hostedType: System.Type) =
         check "ceklc09wlkm2" hostedType.DeclaringType null
         check "ceklc09wlkm3" hostedType.DeclaringMethod null
         check "ceklc09wlkm4" hostedType.FullName "FSharp.Data.TypeProviders.SqlDataConnectionApplied"
-        check "ceklc09wlkm5" (hostedType.GetConstructors()) [| |]
-        check "ceklc09wlkm6" (hostedType.GetCustomAttributesData().Count) 1
-        check "ceklc09wlkm6" (hostedType.GetCustomAttributesData().[0].Constructor.DeclaringType.FullName) typeof<TypeProviderXmlDocAttribute>.FullName
-        check "ceklc09wlkm7" (hostedType.GetEvents()) [| |]
-        check "ceklc09wlkm8" (hostedType.GetFields()) [| |]
-        check "ceklc09wlkm9" [ for m in hostedType.GetMethods() -> m.Name ] [ "GetDataContext" ; "GetDataContext"; "GetDataContext" ]
-        let m0 = hostedType.GetMethods().[0]
-        let m1 = hostedType.GetMethods().[1]
-        let m2 = hostedType.GetMethods().[2]
+        check "ceklc09wlkm5" (hostedType.GetConstructors(bindingAttr)) [| |]
+        check "ceklc09wlkm6b1" (hostedType.GetCustomAttributesData().Count) 2
+        check "ceklc09wlkm6b2" (hostedType.GetCustomAttributesData().[0].Constructor.DeclaringType.Name) typeof<TypeProviderEditorHideMethodsAttribute>.Name
+        check "ceklc09wlkm6b3" (hostedType.GetCustomAttributesData().[1].Constructor.DeclaringType.Name) typeof<TypeProviderXmlDocAttribute>.Name
+        check "ceklc09wlkm7" (hostedType.GetEvents(bindingAttr)) [| |]
+        check "ceklc09wlkm8" (hostedType.GetFields(bindingAttr)) [| |]
+        check "ceklc09wlkm9" [ for m in hostedType.GetMethods(bindingAttr) -> m.Name ] [ "GetDataContext" ; "GetDataContext"; "GetDataContext" ]
+        let m0 = hostedType.GetMethods(bindingAttr).[0]
+        let m1 = hostedType.GetMethods(bindingAttr).[1]
+        let m2 = hostedType.GetMethods(bindingAttr).[2]
         check "ceklc09wlkm9b" (m0.GetParameters().Length) 0
         check "ceklc09wlkm9b" (m1.GetParameters().Length) 1
         check "ceklc09wlkm9b" (m2.GetParameters().Length) 1
         check "ceklc09wlkm9b" (m0.ReturnType.Name) "Northwnd"
         check "ceklc09wlkm9b" (m0.ReturnType.FullName) "FSharp.Data.TypeProviders.SqlDataConnectionApplied+ServiceTypes+SimpleDataContextTypes+Northwnd"
-        check "ceklc09wlkm10" (hostedType.GetProperties()) [| |]
-        check "ceklc09wlkm11" (hostedType.GetNestedTypes().Length) 1
+        check "ceklc09wlkm10" (hostedType.GetProperties(bindingAttr)) [| |]
+        check "ceklc09wlkm11" (hostedType.GetNestedTypes(bindingAttr).Length) 1
         check "ceklc09wlkm12" 
-            (set [ for x in hostedType.GetNestedTypes() -> x.Name ]) 
+            (set [ for x in hostedType.GetNestedTypes(bindingAttr) -> x.Name ]) 
             (set ["ServiceTypes"])
 
-        let hostedServiceTypes = hostedType.GetNestedTypes().[0]
-        check "ceklc09wlkm12b" (hostedServiceTypes.GetMethods()) [| |]
-        check "ceklc09wlkm12c" (hostedServiceTypes.GetNestedTypes().Length) 38
+        let hostedServiceTypes = hostedType.GetNestedTypes(bindingAttr).[0]
+        check "ceklc09wlkm12b" (hostedServiceTypes.GetMethods(bindingAttr)) [| |]
+        check "ceklc09wlkm12c" (hostedServiceTypes.GetNestedTypes(bindingAttr).Length) 38
 
         let hostedSimpleDataContextTypes = hostedServiceTypes.GetNestedType("SimpleDataContextTypes")
-        check "ceklc09wlkm12d" (hostedSimpleDataContextTypes.GetMethods()) [| |]
-        check "ceklc09wlkm12e" (hostedSimpleDataContextTypes.GetNestedTypes().Length) 1
-        check "ceklc09wlkm12e" [ for x in hostedSimpleDataContextTypes.GetNestedTypes() -> x.Name] ["Northwnd"]
+        check "ceklc09wlkm12d" (hostedSimpleDataContextTypes.GetMethods(bindingAttr)) [| |]
+        check "ceklc09wlkm12e" (hostedSimpleDataContextTypes.GetNestedTypes(bindingAttr).Length) 1
+        check "ceklc09wlkm12e" [ for x in hostedSimpleDataContextTypes.GetNestedTypes(bindingAttr) -> x.Name] ["Northwnd"]
 
         check "ceklc09wlkm12" 
-            (set [ for x in hostedServiceTypes.GetNestedTypes() -> x.Name ]) 
+            (set [ for x in hostedServiceTypes.GetNestedTypes(bindingAttr) -> x.Name ]) 
             (set ["Northwnd"; "SimpleDataContextTypes"; "AlphabeticalListOfProduct"; "Category"; "CategorySalesFor1997"; "CurrentProductList"; "CustomerAndSuppliersByCity"; 
                   "CustomerCustomerDemo"; "CustomerDemographic"; "Customer"; "Employee"; "EmployeeTerritory"; 
                   "Invoice"; "OrderDetail"; "OrderDetailsExtended"; "OrderSubtotal"; "Order"; "OrdersQry"; 
@@ -85,8 +88,8 @@ let checkHostedType (hostedType: System.Type) =
                   "CustOrdersDetailResult"; "CustOrdersOrdersResult"; "EmployeeSalesByCountryResult"; "SalesByYearResult"; 
                   "SalesByCategoryResult"; "TenMostExpensiveProductsResult"])
 
-        let customersType = (hostedServiceTypes.GetNestedTypes() |> Seq.find (fun t -> t.Name = "Customer"))
-        check "ceklc09wlkm13"  (customersType.GetProperties().Length) 13
+        let customersType = (hostedServiceTypes.GetNestedTypes(bindingAttr) |> Seq.find (fun t -> t.Name = "Customer"))
+        check "ceklc09wlkm13"  (customersType.GetProperties(bindingAttr).Length) 13
 
 
 let instantiateTypeProviderAndCheckOneHostedType(connectionStringName, configFile, useDataDirectory, dataDirectory, useLocalSchemaFile: string option, useForceUpdate: bool option, typeFullPath: string[], resolutionFolder:string option) = 

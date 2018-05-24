@@ -9,6 +9,7 @@ module FSharp.Data.TypeProviders.Tests.SqlEntityConnectionTests
 open Microsoft.FSharp.Core.CompilerServices
 open System
 open System.IO
+open System.Reflection
 open NUnit.Framework
 
 [<AutoOpen>]
@@ -36,41 +37,44 @@ let isSQLExpressInstalled =
 let checkHostedType (expectedContextTypeName, hostedType: System.Type) = 
         //let hostedType = hostedAppliedType1
         
+        let bindingAttr = BindingFlags.DeclaredOnly ||| BindingFlags.Public ||| BindingFlags.Instance ||| BindingFlags.Static
         test "ceklc09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly)
         test "ceklc09wlkm1b" (hostedType.Assembly.FullName.StartsWith "tmp")
 
         check "ceklc09wlkm2" hostedType.DeclaringType null
         check "ceklc09wlkm3" hostedType.DeclaringMethod null
         check "ceklc09wlkm4" hostedType.FullName ("SqlEntityConnection1.SqlEntityConnectionApplied")
-        check "ceklc09wlkm5" (hostedType.GetConstructors()) [| |]
-        check "ceklc09wlkm6" (hostedType.GetCustomAttributesData().Count) 1
-        check "ceklc09wlkm6" (hostedType.GetCustomAttributesData().[0].Constructor.DeclaringType.FullName) typeof<TypeProviderXmlDocAttribute>.FullName
-        check "ceklc09wlkm7" (hostedType.GetEvents()) [| |]
-        check "ceklc09wlkm8" (hostedType.GetFields()) [| |]
-        check "ceklc09wlkm9" [ for m in hostedType.GetMethods() -> m.Name ] [ "GetDataContext" ;"GetDataContext" ]
-        let m0 = hostedType.GetMethods().[0]
-        let m1 = hostedType.GetMethods().[1]
+        check "ceklc09wlkm5" (hostedType.GetConstructors(bindingAttr)) [| |]
+        check "ceklc09wlkm6b1" (hostedType.GetCustomAttributesData().Count) 2
+        check "ceklc09wlkm6b2" (hostedType.GetCustomAttributesData().[0].Constructor.DeclaringType.Name) typeof<TypeProviderEditorHideMethodsAttribute>.Name
+        check "ceklc09wlkm6b3" (hostedType.GetCustomAttributesData().[1].Constructor.DeclaringType.Name) typeof<TypeProviderXmlDocAttribute>.Name
+        check "ceklc09wlkm7" (hostedType.GetEvents(bindingAttr)) [| |]
+        check "ceklc09wlkm8" (hostedType.GetFields(bindingAttr)) [| |]
+        check "ceklc09wlkm9" [ for m in hostedType.GetMethods(bindingAttr) -> m.Name ] [ "GetDataContext" ;"GetDataContext" ]
+        let m0 = hostedType.GetMethods(bindingAttr).[0]
+        let m1 = hostedType.GetMethods(bindingAttr).[1]
         check "ceklc09wlkm9b" (m0.GetParameters().Length) 0
         check "ceklc09wlkm9c" (m1.GetParameters().Length) 1
         check "ceklc09wlkm9d" (m0.ReturnType.Name) expectedContextTypeName
         check "ceklc09wlkm9e" (m0.ReturnType.FullName) ("SqlEntityConnection1.SqlEntityConnectionApplied+ServiceTypes+SimpleDataContextTypes+" + expectedContextTypeName)
-        check "ceklc09wlkm10" (hostedType.GetProperties()) [| |]
-        check "ceklc09wlkm11" (hostedType.GetNestedTypes().Length) 1
+        check "ceklc09wlkm10" (hostedType.GetProperties(bindingAttr)) [| |]
+        check "ceklc09wlkm11" (hostedType.GetNestedTypes(bindingAttr).Length) 1
         check "ceklc09wlkm12" 
-            (set [ for x in hostedType.GetNestedTypes() -> x.Name ]) 
+            (set [ for x in hostedType.GetNestedTypes(bindingAttr) -> x.Name ]) 
             (set ["ServiceTypes"])
 
-        let hostedServiceTypes = hostedType.GetNestedTypes().[0]
-        check "ceklc09wlkm12b" (hostedServiceTypes.GetMethods()) [| |]
-        check "ceklc09wlkm12c" (hostedServiceTypes.GetNestedTypes().Length) 28
+        let hostedServiceTypes = hostedType.GetNestedTypes(bindingAttr).[0]
+        check "ceklc09wlkm12b" (hostedServiceTypes.GetMethods(bindingAttr)) [| |]
+        check "ceklc09wlkm12c" (hostedServiceTypes.GetNestedTypes(bindingAttr).Length) 28
 
         let hostedSimpleDataContextTypes = hostedServiceTypes.GetNestedType("SimpleDataContextTypes")
-        check "ceklc09wlkm12d" (hostedSimpleDataContextTypes.GetMethods()) [| |]
-        check "ceklc09wlkm12e" (hostedSimpleDataContextTypes.GetNestedTypes().Length) 1
-        check "ceklc09wlkm12e" [ for x in hostedSimpleDataContextTypes.GetNestedTypes() -> x.Name] [expectedContextTypeName]
+        check "ceklc09wlkm12d" (hostedSimpleDataContextTypes.GetMethods(bindingAttr)) [| |]
+        let hostedSimpleDataContextTypesNestedTypes = hostedSimpleDataContextTypes.GetNestedTypes(bindingAttr)
+        check "ceklc09wlkm12e" hostedSimpleDataContextTypesNestedTypes.Length 1
+        check "ceklc09wlkm12e" [ for x in hostedSimpleDataContextTypesNestedTypes -> x.Name] [expectedContextTypeName]
 
         check "ceklc09wlkm12" 
-            (set [ for x in hostedServiceTypes.GetNestedTypes() -> x.Name ]) 
+            (set [ for x in hostedServiceTypes.GetNestedTypes(bindingAttr) -> x.Name ]) 
             (set 
                (["Territory"; "Supplier"; "Summary_of_Sales_by_Year";
                  "Summary_of_Sales_by_Quarter"; "Shipper"; "Sales_Totals_by_Amount";
@@ -83,8 +87,9 @@ let checkHostedType (expectedContextTypeName, hostedType: System.Type) =
                 [expectedContextTypeName] @ 
                 [ "SimpleDataContextTypes"]))
 
-        let customersType = (hostedServiceTypes.GetNestedTypes() |> Seq.find (fun t -> t.Name = "Customer"))
-        check "ceklc09wlkm13"  (customersType.GetProperties().Length) 15
+        let customersType = (hostedServiceTypes.GetNestedTypes(bindingAttr) |> Seq.find (fun t -> t.Name = "Customer"))
+        let customersTypeProperties = customersType.GetProperties(bindingAttr)
+        check "ceklc09wlkm13"  customersTypeProperties.Length 13
 
 let (++) a b = Path.Combine(a,b)
 

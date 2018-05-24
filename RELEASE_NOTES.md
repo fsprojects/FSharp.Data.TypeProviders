@@ -1,3 +1,6 @@
+### 5.1.0.0
+* Update to latest TPSDK
+
 ### 5.0.0.3-beta
 * Added SvcUtilPath to WSDL Type provider, to limit dependencies on .NET SDK
 
