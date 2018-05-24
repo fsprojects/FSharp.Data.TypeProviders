@@ -1,3 +1,6 @@
+### 5.0.0.4
+* Update paket/FAKE
+
 ### 5.0.0.3-beta
 * Added SvcUtilPath to WSDL Type provider, to limit dependencies on .NET SDK
 

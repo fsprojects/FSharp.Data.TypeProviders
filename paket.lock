@@ -1,11 +1,11 @@
 STRATEGY: MIN
-RESTRICTION: >= net45
+RESTRICTION: >= net40
 NUGET
   remote: https://www.nuget.org/api/v2
     FSharp.Core (3.1.2.5) - redirects: force
 
 GROUP Build
-RESTRICTION: >= net45
+RESTRICTION: >= net40
 NUGET
   remote: https://www.nuget.org/api/v2
     FAKE (4.64.13)
@@ -22,7 +22,7 @@ GITHUB
     modules/Octokit/Octokit.fsx (896e227b6da98b21001a1e5940df01d442bc7a25)
       Octokit (>= 0.20)
 GROUP Test
-RESTRICTION: >= net45
+RESTRICTION: >= net40
 NUGET
   remote: https://www.nuget.org/api/v2
     EntityFramework (6.1.3)
