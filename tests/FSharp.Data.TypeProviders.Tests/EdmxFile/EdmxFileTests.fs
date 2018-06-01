@@ -68,7 +68,7 @@ module CheckEdmxfileTypeProvider =
         check "ceklc09wlkm146"  (SampleModel01ContainerType.GetNestedTypes()) [||]
 
 
-    let instantiateTypeProviderAndCheckOneHostedType( edmxfile : string, typeFullPath ) = 
+    let instantiateTypeProviderAndCheckOneHostedType( useMsPrefix, edmxfile : string, typeFullPath ) = 
 
         let assemblyFile = typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
         test "CheckFSharpDataTypeProvidersDLLExist" (File.Exists assemblyFile) 
@@ -86,7 +86,7 @@ module CheckEdmxfileTypeProvider =
         typeProvider1.Invalidate.Add(fun _ -> incr invalidateEventCount)
 
         // Load a type provider instance for the type and restart
-        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.TypeProviders")
+        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = if useMsPrefix then "Microsoft.FSharp.Data.TypeProviders" else "FSharp.Data.TypeProviders")
 
         check "CheckAllTPsAreThere" (set [ for i in hostedNamespace1.GetTypes() -> i.Name ]) (set ["DbmlFile"; "EdmxFile"; "ODataService"; "SqlDataConnection";"SqlEntityConnection";"WsdlService"])
 
@@ -122,17 +122,24 @@ let edmxfile = Path.Combine(__SOURCE_DIRECTORY__, "SampleModel01.edmx")
 
 [<Category("EdmxFile"); Test>]
 let ``EDMX Tests 1`` () =
-    // Test with absolute path
-    // Copy the .edmx used for tests to avoid trashing our original (we may overwrite it when testing the event)
-    File.Copy(Path.Combine(__SOURCE_DIRECTORY__, @"EdmxFiles\SampleModel01.edmx"), edmxfile, true)
-    File.SetAttributes(edmxfile, FileAttributes.Normal)
-    CheckEdmxfileTypeProvider.instantiateTypeProviderAndCheckOneHostedType(edmxfile, [| "EdmxFileApplied" |])
+    let testIt useMsPrefix =
+        // Test with absolute path
+        // Copy the .edmx used for tests to avoid trashing our original (we may overwrite it when testing the event)
+        File.Copy(Path.Combine(__SOURCE_DIRECTORY__, @"EdmxFiles\SampleModel01.edmx"), edmxfile, true)
+        File.SetAttributes(edmxfile, FileAttributes.Normal)
+        CheckEdmxfileTypeProvider.instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, edmxfile, [| "EdmxFileApplied" |])
+
+    testIt false                // Typeprovider name = FSharp.Data.TypeProviders
+    testIt true                 // Typeprovider name = Microsoft.FSharp.Data.TypeProviders
 
 [<Test; Category("EdmxFile")>]
 let ``EDMX Tests 2`` () =
-    // Test with relative path
-    // Copy the .edmx used for tests to avoid trashing our original (we may overwrite it when testing the event)
-    File.Copy(Path.Combine(__SOURCE_DIRECTORY__, @"EdmxFiles\SampleModel01.edmx"), edmxfile, true)
-    File.SetAttributes(edmxfile, FileAttributes.Normal)
-    CheckEdmxfileTypeProvider.instantiateTypeProviderAndCheckOneHostedType( Path.GetFileName(edmxfile), [| "EdmxFileApplied" |])
+    let testIt useMsPrefix =
+        // Test with relative path
+        // Copy the .edmx used for tests to avoid trashing our original (we may overwrite it when testing the event)
+        File.Copy(Path.Combine(__SOURCE_DIRECTORY__, @"EdmxFiles\SampleModel01.edmx"), edmxfile, true)
+        File.SetAttributes(edmxfile, FileAttributes.Normal)
+        CheckEdmxfileTypeProvider.instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, Path.GetFileName(edmxfile), [| "EdmxFileApplied" |])
 
+    testIt false                // Typeprovider name = FSharp.Data.TypeProviders
+    testIt true                 // Typeprovider name = Microsoft.FSharp.Data.TypeProviders

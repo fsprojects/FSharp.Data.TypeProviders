@@ -18,7 +18,7 @@ module Infrastructure =
 
 
 [<AbstractClass>]
-type WsdlServiceTest(serviceUri, prefix, checkHostedType) =     
+type WsdlServiceTest(serviceUri, prefix, useMsPrefix, checkHostedType) =
     
     let check caption a b = Infrastructure.check (prefix + caption) a b
     let test caption v = Infrastructure.test (prefix + caption) v
@@ -40,7 +40,7 @@ type WsdlServiceTest(serviceUri, prefix, checkHostedType) =
         typeProvider1.Invalidate.Add(fun _ -> incr invalidateEventCount)
 
         // Load a type provider instance for the type and restart
-        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.TypeProviders")
+        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = if useMsPrefix then "Microsoft.FSharp.Data.TypeProviders" else "FSharp.Data.TypeProviders")
 
         check "eenewioinw" (set [ for i in hostedNamespace1.GetTypes() -> i.Name ]) (set ["DbmlFile"; "EdmxFile"; "ODataService"; "SqlDataConnection";"SqlEntityConnection";"WsdlService"])
 
@@ -121,15 +121,14 @@ type WsdlServiceTest(serviceUri, prefix, checkHostedType) =
 *)
 
     
-type SimpleWsdlTest() = 
-        inherit WsdlServiceTest("http://api.microsofttranslator.com/V2/Soap.svc", SimpleWsdlTest.Prefix, SimpleWsdlTest.CheckHostedType)
+type SimpleWsdlTest(useMsPrefix) = 
+        inherit WsdlServiceTest("http://api.microsofttranslator.com/V2/Soap.svc", SimpleWsdlTest.Prefix, useMsPrefix, SimpleWsdlTest.CheckHostedType)
 
         static let check caption a b = Infrastructure.check (SimpleWsdlTest.Prefix + caption) a b
         static let test caption v = Infrastructure.test (SimpleWsdlTest.Prefix + caption) v
 
         static member Prefix = "simple-"
         static member CheckHostedType(hostedType) = 
-            //let hostedType = hostedAppliedType1
             test "09wlkm1a" (hostedType.Assembly <> typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly)
             test "09wlkm1b" (hostedType.Assembly.FullName.StartsWith "tmp")
 
@@ -158,8 +157,8 @@ type SimpleWsdlTest() =
             check "09wlkm13"  (languageServiceType.GetProperties().Length) 0
     
 
-type XIgniteWsdlTest() = 
-        inherit WsdlServiceTest("http://www.xignite.com/xFutures.asmx?WSDL", XIgniteWsdlTest.Prefix, XIgniteWsdlTest.CheckHostedType)
+type XIgniteWsdlTest(useMsPrefix) = 
+        inherit WsdlServiceTest("http://www.xignite.com/xFutures.asmx?WSDL", XIgniteWsdlTest.Prefix, useMsPrefix, XIgniteWsdlTest.CheckHostedType)
 
         static let check caption a b = Infrastructure.check (XIgniteWsdlTest.Prefix + caption) a b
         static let test caption v = Infrastructure.test (XIgniteWsdlTest.Prefix + caption) v
@@ -195,10 +194,12 @@ type XIgniteWsdlTest() =
 
 [<Test; Category("WsdlService")>]
 let ``WSDL Tests 1`` () =
-    (new SimpleWsdlTest()).Run()
+    (new SimpleWsdlTest(false)).Run()            // Typeprovider name = FSharp.Data.TypeProviders
+    (new SimpleWsdlTest(true)).Run()        // Typeprovider name = Microsoft.FSharp.Data.TypeProviders
 
 [<Test; Category("WsdlService")>]
 let ``WSDL Tests 2`` () =
-    (new XIgniteWsdlTest()).Run()
+    (new XIgniteWsdlTest(false)).Run()           // Typeprovider name = FSharp.Data.TypeProviders
+    (new XIgniteWsdlTest(true)).Run()       // Typeprovider name = Microsoft.FSharp.Data.TypeProviders
 
 
