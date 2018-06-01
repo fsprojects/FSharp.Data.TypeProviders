@@ -2,7 +2,7 @@ type project
 owners
     Don Syme, Sergey Tihon
 authors 
-    Microsoft Corporation and other contributors
+    F# community contributors (fsprojects)
 projectUrl
     http://github.com/fsprojects/FSharp.Data.TypeProviders
 iconUrl
