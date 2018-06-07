@@ -88,7 +88,7 @@ let checkHostedType (expectedContextTypeName, hostedType: System.Type) =
 
 let (++) a b = Path.Combine(a,b)
 
-let instantiateTypeProviderAndCheckOneHostedType(connectionStringName, configFile, useDataDirectory, dataDirectory, entityContainer: string option, localSchemaFile: string option, useForceUpdate: bool option, typeFullPath: string[], resolutionFolder: string option) = 
+let instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, connectionStringName, configFile, useDataDirectory, dataDirectory, entityContainer: string option, localSchemaFile: string option, useForceUpdate: bool option, typeFullPath: string[], resolutionFolder: string option) = 
         let expectedContextTypeName = match entityContainer with None -> "EntityContainer" | Some s -> s
         let assemblyFile = typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
         test "cnlkenkewe" (File.Exists assemblyFile) 
@@ -100,13 +100,12 @@ let instantiateTypeProviderAndCheckOneHostedType(connectionStringName, configFil
 
         let tpConfig = new TypeProviderConfig(systemRuntimeContainsType, ResolutionFolder=__SOURCE_DIRECTORY__, RuntimeAssembly=assemblyFile, ReferencedAssemblies=[| |], TemporaryFolder=Path.GetTempPath(), IsInvalidationSupported=false, IsHostedExecution=true)
         use typeProvider1 = (new FSharp.Data.TypeProviders.DesignTime.DataProviders( tpConfig ) :> ITypeProvider)
-
         let invalidateEventCount = ref 0
 
         typeProvider1.Invalidate.Add(fun _ -> incr invalidateEventCount)
 
         // Load a type provider instance for the type and restart
-        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.TypeProviders")
+        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = if useMsPrefix then "Microsoft.FSharp.Data.TypeProviders" else "FSharp.Data.TypeProviders")
 
         check "eenewioinw" (set [ for i in hostedNamespace1.GetTypes() -> i.Name ]) (set ["DbmlFile"; "EdmxFile"; "ODataService"; "SqlDataConnection";"SqlEntityConnection";"WsdlService"])
 
@@ -214,71 +213,92 @@ let instantiateTypeProviderAndCheckOneHostedType(connectionStringName, configFil
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 1`` () =
-  // Database not yet installed on appveyor
-  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
-    instantiateTypeProviderAndCheckOneHostedType(None, None, false, None, None, None, None, [| "SqlEntityConnectionApplied" |], None)
+    let testIt useMsPrefix =
+        // Database not yet installed on appveyor
+        if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
+            instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, None, None, false, None, None, None, None, [| "SqlEntityConnectionApplied" |], None)
+    testIt false                // Typeprovider name = FSharp.Data.TypeProviders
+    testIt true                 // Typeprovider name = Microsoft.FSharp.Data.TypeProviders
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 2`` () =
-  // Database not yet installed on appveyor
-  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
-    // Use an implied app.config config file, use the current directory as the DataDirectory
-    instantiateTypeProviderAndCheckOneHostedType(Some "ConnectionString1", None, true, None, None, None, None, [| "SqlEntityConnectionApplied" |], None)
+    let testIt useMsPrefix =
+        // Database not yet installed on appveyor
+        if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
+            // Use an implied app.config config file, use the current directory as the DataDirectory
+            instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, Some "ConnectionString1", None, true, None, None, None, None, [| "SqlEntityConnectionApplied" |], None)
+    testIt false                // Typeprovider name = FSharp.Data.TypeProviders
+    testIt true                 // Typeprovider name = Microsoft.FSharp.Data.TypeProviders
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 3`` () =
-  // Database not yet installed on appveyor
-  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
-    // Use a config file, use an explicit relative DataDirectory
-    instantiateTypeProviderAndCheckOneHostedType(Some "ConnectionString2", Some "app.config", true, Some "DataDirectory", None, None, None, [| "SqlEntityConnectionApplied" |], None)
+    let testIt useMsPrefix =
+        // Database not yet installed on appveyor
+        if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
+            // Use a config file, use an explicit relative DataDirectory
+            instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, Some "ConnectionString2", Some "app.config", true, Some "DataDirectory", None, None, None, [| "SqlEntityConnectionApplied" |], None)
+    testIt false                // Typeprovider name = FSharp.Data.TypeProviders
+    testIt true                 // Typeprovider name = Microsoft.FSharp.Data.TypeProviders
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 4`` () =
-  // Database not yet installed on appveyor
-  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
-    // Use an absolute config file, use an absoltue DataDirectory
-    instantiateTypeProviderAndCheckOneHostedType(Some "ConnectionString3", Some (__SOURCE_DIRECTORY__ ++ "test.config"), true, Some (__SOURCE_DIRECTORY__ ++ "DataDirectory"), None, None, None, [| "SqlEntityConnectionApplied" |], None)
+    let testIt useMsPrefix =
+        // Database not yet installed on appveyor
+        if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
+            // Use an absolute config file, use an absoltue DataDirectory
+            instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, Some "ConnectionString3", Some (__SOURCE_DIRECTORY__ ++ "test.config"), true, Some (__SOURCE_DIRECTORY__ ++ "DataDirectory"), None, None, None, [| "SqlEntityConnectionApplied" |], None)
+    testIt false                // Typeprovider name = FSharp.Data.TypeProviders
+    testIt true                 // Typeprovider name = Microsoft.FSharp.Data.TypeProviders
 
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 5`` () =
-  // Database not yet installed on appveyor
-  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
-    let schemaFile2 = Path.Combine(__SOURCE_DIRECTORY__, "nwind2.ssdl")
-    (try File.Delete schemaFile2 with _ -> ())
-    instantiateTypeProviderAndCheckOneHostedType(None, None, false, None, None, Some (Path.Combine(__SOURCE_DIRECTORY__, "nwind2.ssdl")), Some true, [| "SqlEntityConnectionApplied" |], None)
-    // schemaFile2 should now exist
-    test "eoinew0c9e" (File.Exists schemaFile2)
+    let testIt useMsPrefix =
+        // Database not yet installed on appveyor
+        if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
+            let schemaFile2 = Path.Combine(__SOURCE_DIRECTORY__, "nwind2.ssdl")
+            (try File.Delete schemaFile2 with _ -> ())
+            instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, None, None, false, None, None, Some (Path.Combine(__SOURCE_DIRECTORY__, "nwind2.ssdl")), Some true, [| "SqlEntityConnectionApplied" |], None)
+            // schemaFile2 should now exist
+            test "eoinew0c9e" (File.Exists schemaFile2)
 
-    // Reuse the SSDL just created
-    instantiateTypeProviderAndCheckOneHostedType(None, None, false, None, None, Some (Path.Combine(__SOURCE_DIRECTORY__, "nwind2.ssdl")), Some false, [| "SqlEntityConnectionApplied" |], None)
-    // schemaFile2 should now still exist
-    test "eoinew0c9e" (File.Exists schemaFile2)
+            // Reuse the SSDL just created
+            instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, None, None, false, None, None, Some (Path.Combine(__SOURCE_DIRECTORY__, "nwind2.ssdl")), Some false, [| "SqlEntityConnectionApplied" |], None)
+            // schemaFile2 should now still exist
+            test "eoinew0c9e" (File.Exists schemaFile2)
 
-    // // A relative path should work....
-    // instantiateTypeProviderAndCheckOneHostedType(Some "nwind2.ssdl", Some false)
-    // // schemaFile2 should now still exist
-    // check "eoinew0c9e" (File.Exists schemaFile2)
+            // // A relative path should work....
+            // instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, Some "nwind2.ssdl", Some false)
+            // // schemaFile2 should now still exist
+            // check "eoinew0c9e" (File.Exists schemaFile2)
+    testIt false                // Typeprovider name = FSharp.Data.TypeProviders
+    testIt true                 // Typeprovider name = Microsoft.FSharp.Data.TypeProviders
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 6`` () =
-  // Database not yet installed on appveyor
-  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
-    let schemaFile3 = Path.Combine(__SOURCE_DIRECTORY__, "nwind3.ssdl") 
-    (try File.Delete schemaFile3 with _ -> ())
-    instantiateTypeProviderAndCheckOneHostedType(None, None, false, None, None, Some schemaFile3, None, [| "SqlEntityConnectionApplied" |],None)
-    
-    // schemaFile3 should now exist
-    test "eoinew0c9e" (File.Exists schemaFile3)
+    let testIt useMsPrefix =
+        // Database not yet installed on appveyor
+        if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
+            let schemaFile3 = Path.Combine(__SOURCE_DIRECTORY__, "nwind3.ssdl") 
+            (try File.Delete schemaFile3 with _ -> ())
+            instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, None, None, false, None, None, Some schemaFile3, None, [| "SqlEntityConnectionApplied" |],None)
+
+            // schemaFile3 should now exist
+            test "eoinew0c9e" (File.Exists schemaFile3)
+    testIt false                // Typeprovider name = FSharp.Data.TypeProviders
+    testIt true                 // Typeprovider name = Microsoft.FSharp.Data.TypeProviders
 
 [<Test; Category("SqlEntity")>]
 let ``SqlEntity Tests 7`` () =
-  // Database not yet installed on appveyor
-  if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
-    let schemaFile4 = Path.Combine(__SOURCE_DIRECTORY__, "nwind4.ssdl") 
-    (try File.Delete schemaFile4 with _ -> ())
-    instantiateTypeProviderAndCheckOneHostedType(None, None, false, None, Some "MyEntityContainer", Some schemaFile4, None, [| "SqlEntityConnectionApplied" |], None)
-    
-    // schemaFile4 should now exist
-    test "eoinew0c9e" (File.Exists schemaFile4)
+    let testIt useMsPrefix =
+        // Database not yet installed on appveyor
+        if System.Environment.GetEnvironmentVariable("APPVEYOR") = null then
+            let schemaFile4 = Path.Combine(__SOURCE_DIRECTORY__, "nwind4.ssdl") 
+            (try File.Delete schemaFile4 with _ -> ())
+            instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, None, None, false, None, Some "MyEntityContainer", Some schemaFile4, None, [| "SqlEntityConnectionApplied" |], None)
+            
+            // schemaFile4 should now exist
+            test "eoinew0c9e" (File.Exists schemaFile4)
 
+    testIt false                // Typeprovider name = FSharp.Data.TypeProviders
+    testIt true                 // Typeprovider name = Microsoft.FSharp.Data.TypeProviders

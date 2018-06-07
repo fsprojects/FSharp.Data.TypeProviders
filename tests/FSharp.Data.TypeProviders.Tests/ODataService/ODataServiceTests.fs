@@ -66,7 +66,7 @@ let checkHostedType (hostedType: System.Type) =
             (set [ for x in productType.GetProperties() -> x.Name ]) 
             (set ["ID"; "Name"; "Description"; "ReleaseDate"; "DiscontinuedDate"; "Rating"; "Price"; "Category"; "Supplier"])
 
-let instantiateTypeProviderAndCheckOneHostedType(useLocalSchemaFile: string option, useForceUpdate: bool option, typeFullPath:string[]) = 
+let instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, useLocalSchemaFile: string option, useForceUpdate: bool option, typeFullPath:string[]) = 
         //let useLocalSchemaFile : string option = None
         //let useForceUpdate : bool option = None
         let assemblyFile = typeof<FSharp.Data.TypeProviders.DesignTime.DataProviders>.Assembly.CodeBase.Replace("file:///","").Replace("/","\\")
@@ -85,7 +85,7 @@ let instantiateTypeProviderAndCheckOneHostedType(useLocalSchemaFile: string opti
         typeProvider1.Invalidate.Add(fun _ -> incr invalidateEventCount)
 
         // Load a type provider instance for the type and restart
-        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = "FSharp.Data.TypeProviders")
+        let hostedNamespace1 = typeProvider1.GetNamespaces() |> Seq.find (fun t -> t.NamespaceName = if useMsPrefix then "Microsoft.FSharp.Data.TypeProviders" else "FSharp.Data.TypeProviders")
 
         check "eenewioinw" (set [ for i in hostedNamespace1.GetTypes() -> i.Name ]) (set ["DbmlFile"; "EdmxFile"; "ODataService"; "SqlDataConnection";"SqlEntityConnection";"WsdlService"])
 
@@ -117,27 +117,34 @@ let instantiateTypeProviderAndCheckOneHostedType(useLocalSchemaFile: string opti
 
 [<Test; Category("ODataService")>]
 let ``OData Tests 1`` () =
-    instantiateTypeProviderAndCheckOneHostedType(None, None, [| "ODataServiceApplied" |])
+    instantiateTypeProviderAndCheckOneHostedType(false, None, None, [| "ODataServiceApplied" |])        // Typeprovider name = FSharp.Data.TypeProviders
+    instantiateTypeProviderAndCheckOneHostedType(true, None, None, [| "ODataServiceApplied" |])         // Typeprovider name = Microsoft.FSharp.Data.TypeProviders
 
 [<Test; Category("ODataService")>]
 let ``OData Tests 2`` () =
-    let schemaFile2 = Path.Combine(__SOURCE_DIRECTORY__, "svc.csdl")
-    (try File.Delete schemaFile2 with _ -> ())
-    instantiateTypeProviderAndCheckOneHostedType(Some (Path.Combine(__SOURCE_DIRECTORY__, "svc.csdl")), Some true, [| "ODataServiceApplied" |])
-    // schemaFile2 should now exist
-    test "eoinew0c9e" (File.Exists schemaFile2)
+    let testIt useMsPrefix =
+        let schemaFile2 = Path.Combine(__SOURCE_DIRECTORY__, "svc.csdl")
+        (try File.Delete schemaFile2 with _ -> ())
+        instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, Some (Path.Combine(__SOURCE_DIRECTORY__, "svc.csdl")), Some true, [| "ODataServiceApplied" |])
+        // schemaFile2 should now exist
+        test "eoinew0c9e" (File.Exists schemaFile2)
 
-    // Reuse the CSDL just created
-    instantiateTypeProviderAndCheckOneHostedType(Some (Path.Combine(__SOURCE_DIRECTORY__, "svc.csdl")), Some false, [| "ODataServiceApplied" |])
-    // schemaFile2 should now still exist
-    test "eoinew0c9e" (File.Exists schemaFile2)
-
+        // Reuse the CSDL just created
+        instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, Some (Path.Combine(__SOURCE_DIRECTORY__, "svc.csdl")), Some false, [| "ODataServiceApplied" |])
+        // schemaFile2 should now still exist
+        test "eoinew0c9e" (File.Exists schemaFile2)
+    testIt false                // Typeprovider name = FSharp.Data.TypeProviders
+    testIt true                 // Typeprovider name = Microsoft.FSharp.Data.TypeProviders
+    
 [<Test; Category("ODataService")>]
 let ``OData Tests 4`` () =
-    let schemaFile3 = Path.Combine(__SOURCE_DIRECTORY__, "svc2.csdl") 
-    (try File.Delete schemaFile3 with _ -> ())
-    instantiateTypeProviderAndCheckOneHostedType(Some schemaFile3, None, [| "ODataServiceApplied" |])
-    
-    // schemaFile3 should now exist
-    test "eoinew0c9e" (File.Exists schemaFile3)
+    let testIt useMsPrefix =
+        let schemaFile3 = Path.Combine(__SOURCE_DIRECTORY__, "svc2.csdl") 
+        (try File.Delete schemaFile3 with _ -> ())
+        instantiateTypeProviderAndCheckOneHostedType(useMsPrefix, Some schemaFile3, None, [| "ODataServiceApplied" |])
+        
+        // schemaFile3 should now exist
+        test "eoinew0c9e" (File.Exists schemaFile3)
+    testIt false                // Typeprovider name = FSharp.Data.TypeProviders
+    testIt true                 // Typeprovider name = Microsoft.FSharp.Data.TypeProviders
 

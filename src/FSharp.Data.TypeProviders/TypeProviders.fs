@@ -416,8 +416,6 @@ type public DataProviders(config:TypeProviderConfig) =
         //for c in types do 
         //   printfn "c.Name = '%s', c.BaseType.FullName = '%s'" c.Name c.BaseType.FullName
         
-        if isObsolete then
-            failwith obsoleteMsg
         let contextTypes = types  |> List.filter isCtxtType
         //let contextBaseTypeShortName = dataContextTypeName.Split '.' |> Seq.last
 
