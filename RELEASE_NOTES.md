@@ -1,3 +1,9 @@
+### 5.0.0.6
+* Preventing the obselete message when opening Microsoft.* namespaces instead of FSharp.* namespace.
+
+### 5.0.0.5
+* Fixing Authors
+
 ### 5.0.0.4
 * Update paket/FAKE
 
