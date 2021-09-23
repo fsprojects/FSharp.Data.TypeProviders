@@ -112,7 +112,8 @@ module internal Util =
                              @"Software\Microsoft\Microsoft SDKs\Windows\v8.1A\WinSDK-NetFx40Tools"
                              @"Software\Microsoft\Microsoft SDKs\Windows\v8.0A\WinSDK-NetFx40Tools"
                              @"Software\Microsoft\Microsoft SDKs\Windows\v7.1\WinSDK-NetFx40Tools"
-                             @"Software\Microsoft\Microsoft SDKs\Windows\v7.0A\WinSDK-NetFx40Tools" ]
+                             @"Software\Microsoft\Microsoft SDKs\Windows\v7.0A\WinSDK-NetFx40Tools"
+                             @"Software\Wow6432node\Microsoft\Microsoft SDKs\NETFXSDK\4.8\WinSDK-NetFx40Tools" ]
     
         SDK_REGPATHS 
         |> Seq.tryPick (fun p -> useKey p tryResult) 

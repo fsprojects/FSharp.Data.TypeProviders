@@ -1,5 +1,6 @@
 FSharp.Core
 group Test
-   NUnit
-   NUnit.Runners
-   EntityFramework
+Microsoft.NET.Test.Sdk
+NUnit
+NUnit3TestAdapter
+coverlet.collector

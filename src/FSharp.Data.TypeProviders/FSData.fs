@@ -10,26 +10,9 @@ open Microsoft.FSharp.Text
 open Microsoft.FSharp.Collections
 open Printf
 
-#if FX_RESHAPED_REFLECTION
-type private TypeInThisAssembly (_dummy:obj) = class end
-
-module private extensions =
-    type System.Type with
-        member this.IsGenericType = this.GetTypeInfo().IsGenericType
-        member this.BaseType = this.GetTypeInfo().BaseType
-
-open extensions
-#endif
-
 type internal SR private() =
             
-#if FX_RESHAPED_REFLECTION
-    // can't use typeof here.  Because intrinsics are not yet defined.
-    static let resources = lazy (new System.Resources.ResourceManager("FSData", TypeInThisAssembly(null).GetType().GetTypeInfo().Assembly))
-
-#else
-    static let resources = lazy (new System.Resources.ResourceManager("FSData", System.Reflection.Assembly.GetExecutingAssembly()))
-#endif
+    static let resources = lazy (new System.Resources.ResourceManager("FSharp.Data.TypeProviders.FSData", System.Reflection.Assembly.GetExecutingAssembly()))
     
     static let GetString(name:string) =        
         let s = resources.Value.GetString(name, System.Globalization.CultureInfo.CurrentUICulture)
