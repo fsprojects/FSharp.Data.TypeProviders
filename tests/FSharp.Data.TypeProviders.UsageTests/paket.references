@@ -1,5 +1,6 @@
 FSharp.Core
 group Test
+EntityFramework
 Microsoft.NET.Test.Sdk
 NUnit
 NUnit3TestAdapter
