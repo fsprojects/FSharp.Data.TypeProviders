@@ -1,7 +1,7 @@
 (*** hide ***)
 // This block of code is omitted in the generated HTML documentation. Use 
 // it to define helpers that you do not want to show in the documentation.
-#I "../../bin"
+#I "../bin"
 
 (**
 FSharp.Data.TypeProviders
@@ -53,7 +53,7 @@ Referencing the library
 Reference the library as shown below.
 
 *)
-#r "FSharp.Data.TypeProviders.dll"
+#r "nuget: FSharp.Data.TypeProviders"
 open FSharp.Data.TypeProviders
 
 

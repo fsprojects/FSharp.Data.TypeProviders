@@ -1,12 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net45</TargetFramework>
     <OutputPath>..\..\bin</OutputPath>
+    <NoWarn>3218</NoWarn>
+    <Description>Old F# Type Providers using .NET Framework generators, for Linq-to-SQL, Linq-to-Entities, OData and WSDL</Description>
+    <Version>6.0.1</Version>
+    <Authors>Microsoft, F# Community Contributors (fsprojects)</Authors>
+    <Title>Old F# Type Providers using .NET Framework generators</Title>
+    <Copyright>Microsoft, F# Community Contributors (fsprojects)</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIconUrl>https://raw.githubusercontent.com/fsprojects/FSharp.Data.TypeProviders/master/docs/img/logo.png</PackageIconUrl>
+    <RepositoryUrl>http://github.com/fsprojects/FSharp.Data.TypeProviders</RepositoryUrl>
+    <RepositoryBranch>master</RepositoryBranch>
+    <RepositoryType>git</RepositoryType>
+    <PackageReleaseNotes>See https://github.com/fsprojects/FSharp.Data.TypeProviders/blob/master/RELEASE_NOTES.md</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="paket.references" />
-    <None Include="paket.template" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="FSData.fs" />
     <Compile Include="Util.fs" />
@@ -18,6 +29,6 @@
   <ItemGroup>
     <Reference Include="System.Configuration" />
     <Reference Include="System.ServiceModel" />
+    <PackageReference Update="FSharp.Core" Version="4.7.2" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -1,31 +1,30 @@
 (*** hide ***)
 // This block of code is omitted in the generated HTML documentation. Use 
 // it to define helpers that you do not want to show in the documentation.
-#I "../../bin"
+#I "../bin"
 
 (**
 The SqlDataConnection Type Provider (FSharp.Data.TypeProviders)
 ========================
 
-Please see [Walkthrough: Accessing a SQL Database by Using Type Providers](https://msdn.microsoft.com/en-us/library/hh361033.aspx)
+Please see [Archived Walkthrough: Accessing a SQL Database by Using Type Providers](https://web.archive.org/web/20140625103027/https://msdn.microsoft.com/en-us/library/hh361033.aspx)
 
 > NOTE: Use ``FSharp.Data.TypeProviders`` instead of ``Microsoft.FSharp.Data.TypeProviders`` 
 
 Reference 
 ---------
 
-Please see the [MSDN Documentation](https://msdn.microsoft.com/en-us/library/hh362324.aspx)
+Please see the [Archived MSDN Documentation](https://web.archive.org/web/20140704072705/https://msdn.microsoft.com/en-us/library/hh362320.aspx)
+
 
 Example
-------
+---------
 
-Please see [Walkthrough: Accessing a SQL Database by Using Type Providers](https://msdn.microsoft.com/en-us/library/hh361033.aspx)
-
-See also below for a micro example use of the type provider:
+See below for a micro example use of the type provider:
 
 *)
 #r "System.Data.Linq.dll"
-#r "FSharp.Data.TypeProviders.dll"
+#r "nuget: FSharp.Data.TypeProviders"
 open FSharp.Data.TypeProviders
 
 // The database connection string

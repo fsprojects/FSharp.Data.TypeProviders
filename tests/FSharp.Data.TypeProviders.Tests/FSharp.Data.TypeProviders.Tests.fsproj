@@ -1,38 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-	  <IsPackable>false</IsPackable>
-	  <GenerateProgramFile>false</GenerateProgramFile>
+    <IsPackable>false</IsPackable>
+    <GenerateProgramFile>false</GenerateProgramFile>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-
-  <Import Project="..\..\.paket\paket.targets" />
   <ItemGroup>
-	<None Include="paket.references" />
-    <Compile Include="EdmxFile\EdmxFileTests.fs">
-      <Link>EdmxFileTests.fs</Link>
-    </Compile>
-    <Compile Include="ODataService\ODataServiceTests.fs">
-      <Link>ODataServiceTests.fs</Link>
-    </Compile>
-    <Compile Include="SqlDataConnection\SqlDataConnectionTests.fs">
-      <Link>SqlDataConnectionTests.fs</Link>
-    </Compile>
-    <Compile Include="SqlEntityConnection\SqlEntityConnectionTests.fs">
-      <Link>SqlEntityConnectionTests.fs</Link>
-    </Compile>
-    <Compile Include="WsdlService\WsdlServiceTests.fs">
-      <Link>WsdlServiceTests.fs</Link>
-    </Compile>
+    <Compile Include="EdmxFile\EdmxFileTests.fs" />
+    <Compile Include="ODataService\ODataServiceTests.fs" />
+    <Compile Include="SqlDataConnection\SqlDataConnectionTests.fs" />
+    <Compile Include="SqlEntityConnection\SqlEntityConnectionTests.fs" />
+    <Compile Include="WsdlService\WsdlServiceTests.fs" />
     <Content Include="app.config" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\FSharp.Data.TypeProviders\FSharp.Data.TypeProviders.fsproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="System.Management" />
+    <PackageReference Update="FSharp.Core" Version="4.7.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0" />
+    <PackageReference Include="NUnit" Version="3.13.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.1" />
   </ItemGroup>
-
 </Project>

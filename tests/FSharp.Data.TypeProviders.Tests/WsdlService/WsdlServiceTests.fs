@@ -2,7 +2,7 @@
 #if COMPILED
 module FSharp.Data.TypeProviders.Tests.WsdlServiceTests
 #else
-#r "FSharp.Data.TypeProviders.dll"
+#r "nuget: FSharp.Data.TypeProviders"
 #endif
 
 open Microsoft.FSharp.Core.CompilerServices

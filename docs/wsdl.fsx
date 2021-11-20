@@ -1,31 +1,29 @@
 (*** hide ***)
 // This block of code is omitted in the generated HTML documentation. Use 
 // it to define helpers that you do not want to show in the documentation.
-#I "../../bin"
+#I "../bin"
 
 (**
 The WsdlService Type Provider (FSharp.Data.TypeProviders)
 ========================
 
-Please see [Walkthrough: Walkthrough: Accessing a Web Service by Using Type Providers](https://msdn.microsoft.com/en-us/library/hh156503.aspx)
+Please see [Archived Walkthrough: Archived: Accessing a Web Service by Using Type Providers](https://web.archive.org/web/20131207011653/http://msdn.microsoft.com/en-us/library/hh156503.aspx)
 
 > NOTE: Use ``FSharp.Data.TypeProviders`` instead of ``Microsoft.FSharp.Data.TypeProviders`` 
 
 Reference 
 ---------
 
-Please see the [MSDN Documentation](https://msdn.microsoft.com/en-us/library/hh362324.aspx)
+Please see the [Archived MSDN Documentation](https://web.archive.org/web/20131013140233/http://msdn.microsoft.com/en-us/library/hh362328.aspx)
 
 Example
 ------
 
-Please see [Walkthrough: Walkthrough: Accessing a Web Service by Using Type Providers](https://msdn.microsoft.com/en-us/library/hh156503.aspx)
-
-See also below for a micro example use of the type provider:
+See below for a micro example use of the type provider:
 
 *)
 #r "System.ServiceModel"
-#r "FSharp.Data.TypeProviders.dll"
+#r "nuget: FSharp.Data.TypeProviders"
 open FSharp.Data.TypeProviders
 
 type Wsdl1 = WsdlService<"http://api.microsofttranslator.com/V2/Soap.svc">

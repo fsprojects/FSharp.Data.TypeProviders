@@ -1,3 +1,6 @@
+### 6.0.1
+* Update to allow use with VS2022 and VS2019
+
 ### 5.0.0.6
 * Preventing the obselete message when opening Microsoft.* namespaces instead of FSharp.* namespace.
 
