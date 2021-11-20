@@ -1,5 +1,3 @@
-[![Issue Stats](http://issuestats.com/github/fsprojects/FSharp.Data.TypeProviders/badge/issue)](http://issuestats.com/github/fsprojects/FSharp.Data.TypeProviders)
-[![Issue Stats](http://issuestats.com/github/fsprojects/FSharp.Data.TypeProviders/badge/pr)](http://issuestats.com/github/fsprojects/FSharp.Data.TypeProviders)
 
 # Old F# Type Providers
 
