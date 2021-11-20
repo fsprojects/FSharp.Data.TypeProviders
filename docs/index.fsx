@@ -74,9 +74,9 @@ The library is available under the Apache 2.0 license, which allows modification
 redistribution for both commercial and non-commercial purposes. For more information see the 
 [License file][license] in the GitHub repository. 
 
-  [content]: https://github.com/fsprojects/FSharp.Data.TypeProviders/tree/master/docs/content
+  [content]: https://github.com/fsprojects/FSharp.Data.TypeProviders/tree/main/docs/content
   [gh]: https://github.com/fsprojects/FSharp.Data.TypeProviders
   [issues]: https://github.com/fsprojects/FSharp.Data.TypeProviders/issues
-  [readme]: https://github.com/fsprojects/FSharp.Data.TypeProviders/blob/master/README.md
-  [license]: https://github.com/fsprojects/FSharp.Data.TypeProviders/blob/master/LICENSE.txt
+  [readme]: https://github.com/fsprojects/FSharp.Data.TypeProviders/blob/main/README.md
+  [license]: https://github.com/fsprojects/FSharp.Data.TypeProviders/blob/main/LICENSE.txt
 *)

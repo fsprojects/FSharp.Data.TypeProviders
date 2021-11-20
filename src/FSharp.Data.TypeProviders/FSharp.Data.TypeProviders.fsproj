@@ -10,11 +10,11 @@
     <Title>Old F# Type Providers using .NET Framework generators</Title>
     <Copyright>Microsoft, F# Community Contributors (fsprojects)</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIconUrl>https://raw.githubusercontent.com/fsprojects/FSharp.Data.TypeProviders/master/docs/img/logo.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/fsprojects/FSharp.Data.TypeProviders/main/docs/img/logo.png</PackageIconUrl>
     <RepositoryUrl>http://github.com/fsprojects/FSharp.Data.TypeProviders</RepositoryUrl>
-    <RepositoryBranch>master</RepositoryBranch>
+    <RepositoryBranch>main</RepositoryBranch>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>See https://github.com/fsprojects/FSharp.Data.TypeProviders/blob/master/RELEASE_NOTES.md</PackageReleaseNotes>
+    <PackageReleaseNotes>See https://github.com/fsprojects/FSharp.Data.TypeProviders/blob/main/RELEASE_NOTES.md</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
