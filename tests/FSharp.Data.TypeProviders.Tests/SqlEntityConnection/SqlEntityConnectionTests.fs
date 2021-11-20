@@ -2,7 +2,7 @@
 #if COMPILED
 module FSharp.Data.TypeProviders.Tests.SqlEntityConnectionTests
 #else
-#r "FSharp.Data.TypeProviders.dll"
+#r "nuget: FSharp.Data.TypeProviders"
 #r "System.Management.dll"
 #endif
 
