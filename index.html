@@ -5,7 +5,7 @@
     <title>FSharp.Data.TypeProviders
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="description" content="F# Type Providers using .NET Framework generators, was FSharp.Data.TypeProviders.dll"/>
+    <meta name="description" content="Legacy F# Type Providers using .NET Framework generators"/>
     <meta name="author" content="Microsoft Corporation and other contributors"/>
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
@@ -34,8 +34,21 @@
         <div class="span9" id="main">
           
 <h1><a name="FSharp-Data-TypeProviders" class="anchor" href="#FSharp-Data-TypeProviders">FSharp.Data.TypeProviders</a></h1>
-<p>The F# Type Providers SqlDataConnection, SqlEntityConnection, ODataService,
+<p>The Legacy F# Type Providers SqlDataConnection, SqlEntityConnection, ODataService,
 WsdlService, DbmlFile and EdmxFile using .NET Framework generators.</p>
+<p>
+  <b>These are considered legacy.</b> They are implemented using old .NET Framework code generators (~2006 technology) which haven't been updated for some time. These may only be used within .NET Framework projects, and require the .NET Framework F# compiler, which is now only available as part of Visual Studio and its Build TOols, and is not available in the .NET SDK. If using these type providers with F# scripting inside VIsual Studio you should also enable .NET Framework scripting by default in the F# options.
+          </p>
+<ul>
+  <li> If you are using these type providers you could consider moving to a different data access technique.</li>
+
+  <li> For up-to-date type providers see <a href="https://fsharp.org/guides/data-access/">F# Data Access Guide</a> and search on the web.</li>
+
+  <li> For WSDL see FSharp.Data.WsdlProvider</li>
+
+  <li> For modern WebAPIs see FSharp.Data and also SwaggerProvider.</li>
+</ul>
+
 <div class="row">
   <div class="span1"></div>
   <div class="span6">
