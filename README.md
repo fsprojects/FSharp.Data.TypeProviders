@@ -1,7 +1,7 @@
 
-# Old F# Type Providers
+# Some old F# Type Providers
 
-The Old F# Type Providers SqlDataConnection, SqlEntityConnection, ODataService, WsdlService and EdmxFile.
+This repository contains the source for the Old F# type providers called SqlDataConnection, SqlEntityConnection, ODataService, WsdlService and EdmxFile.
 Implemented using .NET Framework code generators. These may only be used within .NET Framework projects, and probably require the .NET Framework F# compiler, which is now only available as part of Visual Studio, and is not available in the .NET SDK.
 
 
@@ -14,7 +14,7 @@ For modern WebAPIs see [FSharp.Data](https://fsprojects.github.io/FSharp.Data/) 
 
 # Docs
 
-The doc build is no longer working 
+The doc build is no longer fully working because `fsdocs` processes scripts as .NET Core, yet the scripts must execute using .NET Framework.
 
 ## Maintainer(s)
 
