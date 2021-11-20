@@ -1,12 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-	<IsPackable>false</IsPackable>
-	<GenerateProgramFile>false</GenerateProgramFile>
+    <IsPackable>false</IsPackable>
+    <GenerateProgramFile>false</GenerateProgramFile>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-
-  <Import Project="..\..\.paket\paket.targets" />
   <ItemGroup>
     <None Include="paket.references" />
     <Compile Include="EdmxFile\EdmxFileTests.fs">
@@ -26,9 +25,8 @@
     </Compile>
     <Content Include="app.config" />
   </ItemGroup>
-
   <ItemGroup>
-	  <None Include="paket.references" />
+    <None Include="paket.references" />
     <Compile Include="EdmxFile\EdmxFileTests.fs">
       <Link>EdmxFileTests.fs</Link>
     </Compile>
@@ -46,7 +44,6 @@
     </Compile>
     <Content Include="app.config" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="FSharp.Data.TypeProviders">
       <HintPath>..\..\bin\net472\FSharp.Data.TypeProviders.dll</HintPath>
@@ -57,5 +54,5 @@
     <Reference Include="System.Management" />
     <Reference Include="System.ServiceModel" />
   </ItemGroup>
-  
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
